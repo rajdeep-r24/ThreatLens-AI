@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 
 from app.api.deps import get_db, get_current_user
 from app.core.config import settings
@@ -59,19 +60,52 @@ def register_user(
 
 
 @router.post("/login", response_model=TokenResponse)
-def login_user(
-    credentials: UserLogin,
+async def login_user(
+    request: Request,
     db: Session = Depends(get_db)
 ):
     """
-    Authenticate user via email/username and password. Returns JWT access & refresh tokens.
+    Authenticate user via username/email and password.
+    Supports both JSON request body and standard OAuth2 x-www-form-urlencoded (for Swagger UI Authorize button).
     """
+    content_type = request.headers.get("content-type", "")
+    username_or_email: Optional[str] = None
+    password: Optional[str] = None
+
+    if "application/json" in content_type:
+        try:
+            body = await request.json()
+            username_or_email = body.get("username_or_email") or body.get("username")
+            password = body.get("password")
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid JSON body in login request."
+            )
+    else:
+        # Handle form-urlencoded (Swagger UI OAuth2 modal)
+        try:
+            form = await request.form()
+            username_or_email = form.get("username") or form.get("username_or_email")
+            password = form.get("password")
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid form data in login request."
+            )
+
+    if not username_or_email or not password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Both username/email and password are required."
+        )
+
     # Find user by username OR email
     user = db.query(User).filter(
-        (User.email == credentials.username_or_email) | (User.username == credentials.username_or_email)
+        (User.email == username_or_email) | (User.username == username_or_email)
     ).first()
 
-    if not user or not verify_password(credentials.password, user.hashed_password):
+    if not user or not verify_password(password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials: username/email or password incorrect.",
