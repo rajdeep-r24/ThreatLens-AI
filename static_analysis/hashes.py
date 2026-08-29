@@ -10,7 +10,7 @@ def calculate_hashes(file_path):
       sha256.update(chunk)
 
   return {
-      "md5": md5.hexdigest()
+      "md5": md5.hexdigest(),
       "sha256": sha256.hexdigest()
   }
       
