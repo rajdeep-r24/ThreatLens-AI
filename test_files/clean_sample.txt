@@ -1,0 +1,2 @@
+This is a harmless sample file used to confirm the YARA scanner
+correctly reports no matches for clean, non-malicious content.
