@@ -6,11 +6,12 @@ from app.core.config import settings
 from app.db.init_db import setup_initial_data
 from app.api.v1.auth import router as auth_router
 from app.api.v1.protected_routes import router as protected_router
+from app.api.v1.files import router as files_router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize DB & Seed demo users on startup
+    # Initialize DB tables and seed initial demo users + scans on startup
     setup_initial_data()
     yield
 
@@ -33,9 +34,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register API v1 Routers
+# Register API v1 Routers (Primary standard)
 app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(protected_router, prefix=settings.API_V1_STR)
+app.include_router(files_router, prefix=settings.API_V1_STR)
+
+# Register aliases for frontend client compatibility (/api/...)
+app.include_router(auth_router, prefix="/api")
+app.include_router(files_router, prefix="/api")
 
 
 @app.get("/", tags=["Health"])
@@ -51,3 +57,13 @@ def root():
 @app.get("/health", tags=["Health"])
 def health_check():
     return {"status": "healthy"}
+
+
+@app.get("/api/health", tags=["Health"])
+def api_health_check():
+    return {
+        "status": "online",
+        "system": "ThreatLens AI System Core",
+        "milestone": 1,
+        "database": "connected"
+    }
