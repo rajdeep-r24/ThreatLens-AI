@@ -1,12 +1,81 @@
-const API_BASE = '/api';
+const API_BASE = '/api/v1';
+
+// Token storage helpers
+export function getStoredToken() {
+  return localStorage.getItem('threatlens_token');
+}
+
+export function setStoredToken(token) {
+  if (token) {
+    localStorage.setItem('threatlens_token', token);
+  } else {
+    localStorage.removeItem('threatlens_token');
+  }
+}
+
+export function getAuthHeaders() {
+  const token = getStoredToken();
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+}
+
+// -------------------------------------------------------------
+// Authentication API
+// -------------------------------------------------------------
+
+export async function loginUser(username_or_email, password) {
+  try {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username_or_email, password }),
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.detail || 'Authentication failed');
+    }
+
+    const data = await res.json();
+    setStoredToken(data.access_token);
+    return data;
+  } catch (err) {
+    console.warn('Real Auth API call failed, attempting fallback mock:', err);
+    throw err;
+  }
+}
+
+export async function fetchCurrentUser() {
+  try {
+    const res = await fetch(`${API_BASE}/auth/me`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
+    if (!res.ok) throw new Error('Failed to fetch user profile');
+    return await res.json();
+  } catch (err) {
+    console.warn('Fetch current user error:', err);
+    return null;
+  }
+}
+
+// -------------------------------------------------------------
+// Dashboard & Files API
+// -------------------------------------------------------------
 
 export async function fetchDashboardStats() {
   try {
-    const res = await fetch(`${API_BASE}/dashboard/stats`);
+    const res = await fetch(`${API_BASE}/dashboard/stats`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
     if (!res.ok) throw new Error('API Error');
     return await res.json();
   } catch (err) {
-    console.warn('Backend API unavailable, using local mock stats:', err);
+    console.warn('Backend API unavailable, using local fallback stats:', err);
     return {
       total_scans: 3,
       completed_scans: 3,
@@ -21,7 +90,11 @@ export async function fetchDashboardStats() {
 
 export async function fetchFileList() {
   try {
-    const res = await fetch(`${API_BASE}/files`);
+    const res = await fetch(`${API_BASE}/files`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
     if (!res.ok) throw new Error('API Error');
     return await res.json();
   } catch (err) {
@@ -88,12 +161,15 @@ export async function fetchFileList() {
 
 export async function fetchFileDetail(id) {
   try {
-    const res = await fetch(`${API_BASE}/files/${id}`);
+    const res = await fetch(`${API_BASE}/files/${id}`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
     if (!res.ok) throw new Error('API Error');
     return await res.json();
   } catch (err) {
     console.warn(`Backend API unavailable, using local mock file detail for ID ${id}:`, err);
-    // Return mock detail for invoice.exe or payload_sample.dll
     return {
       id: Number(id),
       filename: id == 2 ? "payload_sample.dll" : (id == 3 ? "quarterly_report.pdf" : "invoice.exe"),

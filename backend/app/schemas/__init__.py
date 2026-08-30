@@ -5,6 +5,8 @@ from app.schemas.auth import (
     UserResponse,
     TokenResponse,
     RefreshTokenRequest,
+    TokenPayload,
+    RoleUpdateRequest,
 )
 from app.schemas.scan import (
     FileResponse,
@@ -13,16 +15,15 @@ from app.schemas.scan import (
     DashboardStatsResponse,
 )
 
-UserCreate = UserRegister
-
 __all__ = [
     "UserBase",
-    "UserCreate",
     "UserRegister",
     "UserLogin",
     "UserResponse",
     "TokenResponse",
     "RefreshTokenRequest",
+    "TokenPayload",
+    "RoleUpdateRequest",
     "FileResponse",
     "AnalysisResultResponse",
     "YARAResultResponse",

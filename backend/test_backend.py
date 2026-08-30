@@ -1,50 +1,68 @@
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# Add paths for standalone execution
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.abspath(os.path.join(current_dir, ".."))
+sys.path.insert(0, current_dir)
+sys.path.insert(0, parent_dir)
+
+try:
+    from app.main import app
+except ImportError:
+    from backend.app.main import app
 
 from fastapi.testclient import TestClient
-from backend.app.main import app
 
 client = TestClient(app)
 
+
 def test_api_endpoints():
-    print("Testing Backend API Endpoints (Member 1 Database & Architecture)...")
+    print("Testing Backend API Endpoints (Member 1 & Member 3 Integration)...")
     
-    # Health check
+    # 1. Health check
     res = client.get("/api/health")
     assert res.status_code == 200
     print("[PASS] GET /api/health ->", res.json())
 
-    # Get users
-    res = client.get("/api/users")
+    # 2. Health root check
+    res = client.get("/health")
     assert res.status_code == 200
-    users = res.json()
-    assert len(users) >= 4
-    print(f"[PASS] GET /api/users -> Found {len(users)} users with roles: {[u['role'] for u in users]}")
+    print("[PASS] GET /health ->", res.json())
 
-    # Dashboard stats
-    res = client.get("/api/dashboard/stats")
+    # 3. Roles Permission Matrix
+    res = client.get("/api/v1/auth/roles-matrix")
+    assert res.status_code == 200
+    roles = res.json()
+    assert "Administrator" in roles
+    assert "Security Analyst" in roles
+    print(f"[PASS] GET /api/v1/auth/roles-matrix -> Verified all {len(roles)} roles")
+
+    # 4. Dashboard stats
+    res = client.get("/api/v1/dashboard/stats")
     assert res.status_code == 200
     stats = res.json()
-    print("[PASS] GET /api/dashboard/stats ->", stats)
+    assert stats["total_scans"] >= 3
+    print("[PASS] GET /api/v1/dashboard/stats ->", stats)
 
-    # Get files list
-    res = client.get("/api/files")
+    # 5. Get files list
+    res = client.get("/api/v1/files")
     assert res.status_code == 200
     files = res.json()
     assert len(files) >= 3
-    print(f"[PASS] GET /api/files -> Listed {len(files)} files: {[f['filename'] for f in files]}")
+    print(f"[PASS] GET /api/v1/files -> Listed {len(files)} files: {[f['filename'] for f in files]}")
 
-    # Get file detail
-    res = client.get("/api/files/1")
+    # 6. Get file detail
+    res = client.get("/api/v1/files/1")
     assert res.status_code == 200
     file_detail = res.json()
     assert file_detail["filename"] == "invoice.exe"
     assert file_detail["analysis_result"]["risk_score"] == 82
     assert len(file_detail["yara_results"]) >= 2
-    print("[PASS] GET /api/files/1 -> Successfully fetched detail for invoice.exe")
-    print("\nALL BACKEND API TESTS PASSED SUCCESSFULLY!")
+    print("[PASS] GET /api/v1/files/1 -> Successfully fetched detail for invoice.exe")
+    
+    print("\nALL BACKEND API INTEGRATION TESTS PASSED SUCCESSFULLY!")
+
 
 if __name__ == "__main__":
     test_api_endpoints()
