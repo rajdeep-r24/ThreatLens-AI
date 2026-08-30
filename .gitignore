@@ -20,6 +20,9 @@ venv.bak/
 *.db
 *.sqlite3
 
+# Uploads quarantine
+uploads/
+
 # Testing & Coverage
 .pytest_cache/
 .coverage
