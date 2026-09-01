@@ -55,19 +55,6 @@ npm run dev
 
 ---
 
-## 🔑 Demo Accounts for Testing
-
-The database comes pre-seeded with accounts for all 4 roles:
-
-| Role | Username | Password | Access Capabilities |
-| :--- | :--- | :--- | :--- |
-| **Security Analyst** | `analyst_sarah` | `AnalystPassword123!` | File uploads, static analysis scans, reports |
-| **Administrator** | `admin` | `AdminPassword123!` | User management, settings, policies |
-| **SOC Team Member** | `soc_alex` | `SocPassword123!` | Detection logs, active threat tracking |
-| **Researcher** | `researcher_elena` | `ResearcherPassword123!` | Sample analysis, threat intelligence |
-
----
-
 ## 🧪 Running Automated Tests
 
 To verify backend endpoints and authentication guards:
