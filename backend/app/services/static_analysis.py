@@ -13,7 +13,10 @@ from static_analysis.pe_analysis import analyze_pe
 from static_analysis.strings import extract_strings
 from static_analysis.indicators import extract_indicators
 
-
+from backend.app.services.malware_detection import (
+    extract_ml_features,
+    predict_malware,
+)
 # Suspicious keywords & APIs common in malware
 SUSPICIOUS_API_KEYWORDS = [
     "VirtualAlloc", "VirtualProtect", "WriteProcessMemory", "CreateRemoteThread",
@@ -69,7 +72,11 @@ def run_static_analysis_pipeline(file_path: str) -> Dict[str, Any]:
         if any(bad in s.lower() for bad in SUSPICIOUS_STRINGS)
     ][:20]  # Cap top 20 matches
 
-    # 7. Heuristic Risk Scoring (0 to 100)
+    # 7. ML Malware Prediction
+    ml_features = extract_ml_features(file_path)
+    ml_prediction = predict_malware(ml_features)
+
+    # 8. Heuristic Risk Scoring (0 to 100)
     risk_score = 0
     threat_classification = "Benign Clean Document"
     recommended_action = "No Action Required"
@@ -98,6 +105,19 @@ def run_static_analysis_pipeline(file_path: str) -> Dict[str, Any]:
         threat_classification = "Low Risk Unclassified File"
         recommended_action = "Monitor File Activity"
 
+    # 9. Combine ML prediction with heuristic risk score
+    ml_confidence_percent = ml_prediction["confidence"] * 100
+
+    if ml_prediction["label"] == "Malware":
+        final_risk_score = max(
+            risk_score,
+            int(ml_confidence_percent)
+        )
+    else:
+        final_risk_score = risk_score
+
+    final_risk_score = min(final_risk_score, 100)
+
     return {
         "filename": info["file_name"],
         "file_size": info["file_size"],
@@ -110,5 +130,8 @@ def run_static_analysis_pipeline(file_path: str) -> Dict[str, Any]:
         "network_indicators": indicators,
         "risk_score": risk_score,
         "threat_classification": threat_classification,
-        "recommended_action": recommended_action
+        "recommended_action": recommended_action,
+        "ml_prediction": ml_prediction["label"],
+        "ml_confidence": ml_prediction["confidence"],
+        "final_risk_score": final_risk_score
     }
