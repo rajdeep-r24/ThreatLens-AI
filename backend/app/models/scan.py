@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, JSON
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, JSON , Float
 from sqlalchemy.orm import relationship
 
 from app.models.user import Base, User
@@ -33,9 +33,14 @@ class AnalysisResult(Base):
     extracted_strings = Column(JSON, nullable=True)
     suspicious_apis = Column(JSON, nullable=True)
     network_indicators = Column(JSON, nullable=True)
-    risk_score = Column(Integer, default=0)  # 0 to 100
+    risk_score = Column(Integer, default=0)
     threat_classification = Column(String(100), nullable=True)
     recommended_action = Column(String(255), nullable=True)
+
+    ml_prediction = Column(String(50), nullable=True)
+    ml_confidence = Column(Float, nullable=True)
+    final_risk_score = Column(Integer, default=0)
+
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     file = relationship("File", back_populates="analysis_result")

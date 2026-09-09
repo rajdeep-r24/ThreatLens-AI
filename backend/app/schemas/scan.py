@@ -25,6 +25,10 @@ class AnalysisResultResponse(BaseModel):
     risk_score: int
     threat_classification: Optional[str] = None
     recommended_action: Optional[str] = None
+    ml_prediction: Optional[str] = None
+    ml_confidence: Optional[float] = None
+    final_risk_score: Optional[int] = None
+
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

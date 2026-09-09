@@ -62,7 +62,11 @@ async def upload_and_analyze_file(
             risk_score=analysis_data["risk_score"],
             threat_classification=analysis_data["threat_classification"],
             recommended_action=analysis_data["recommended_action"],
+            ml_prediction=analysis_data.get("ml_prediction"),
+            ml_confidence=analysis_data.get("ml_confidence"),
+            final_risk_score=analysis_data.get("final_risk_score"),
         )
+        
         db.add(result_record)
         db.commit()
         db.refresh(file_record)
