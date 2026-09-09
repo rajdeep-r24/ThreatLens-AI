@@ -28,6 +28,7 @@ class AnalysisResultResponse(BaseModel):
     ml_prediction: Optional[str] = None
     ml_confidence: Optional[float] = None
     final_risk_score: Optional[int] = None
+    scan_duration: Optional[float] = None
 
     created_at: datetime
 

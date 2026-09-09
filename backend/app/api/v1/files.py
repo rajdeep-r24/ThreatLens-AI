@@ -65,6 +65,7 @@ async def upload_and_analyze_file(
             ml_prediction=analysis_data.get("ml_prediction"),
             ml_confidence=analysis_data.get("ml_confidence"),
             final_risk_score=analysis_data.get("final_risk_score"),
+            scan_duration=analysis_data.get("scan_duration"),
         )
         
         db.add(result_record)

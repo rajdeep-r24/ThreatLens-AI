@@ -12,8 +12,8 @@ export default function LoginPage({ onLoginSuccess }) {
   const demoAccounts = [
     { username: 'admin', password: 'AdminPassword123!', role: 'Administrator', title: 'Administrator', desc: 'User management & security policies' },
     { username: 'analyst_sarah', password: 'AnalystPassword123!', role: 'Security Analyst', title: 'Security Analyst', desc: 'File uploads, static scans, reports' },
-    { username: 'soc_alex', password: 'SocPassword123!', role: 'SOC Team Member', title: 'SOC Team Member', desc: 'Monitor logs, active threats & alerts' },
-    { username: 'researcher_elena', password: 'ResearcherPassword123!', role: 'Researcher', title: 'Researcher', desc: 'Malware datasets & threat analytics' },
+    { username: 'soc_aman', password: 'SocPassword123!', role: 'SOC Team Member', title: 'SOC Team Member', desc: 'Monitor logs, active threats & alerts' },
+    { username: 'researcher_mohit', password: 'ResearcherPassword123!', role: 'Researcher', title: 'Researcher', desc: 'Malware datasets & threat analytics' },
   ];
 
   const handleSelectDemo = (account) => {
