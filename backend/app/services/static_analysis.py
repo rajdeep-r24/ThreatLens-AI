@@ -1,3 +1,4 @@
+import time
 import os
 import sys
 from typing import Dict, Any, List
@@ -42,6 +43,8 @@ def run_static_analysis_pipeline(file_path: str) -> Dict[str, Any]:
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"File not found: {file_path}")
 
+    start_time = time.time()
+
     # 1. Hashes
     hashes = calculate_hashes(file_path)
 
@@ -73,8 +76,13 @@ def run_static_analysis_pipeline(file_path: str) -> Dict[str, Any]:
     ][:20]  # Cap top 20 matches
 
     # 7. ML Malware Prediction
-    ml_features = extract_ml_features(file_path)
-    ml_prediction = predict_malware(ml_features)
+    ml_prediction = {"label": "N/A", "confidence": 0.0}
+    if pe_data.get("is_pe"):
+        try:
+            ml_features = extract_ml_features(file_path)
+            ml_prediction = predict_malware(ml_features)
+        except Exception:
+            pass
 
     # 8. Heuristic Risk Scoring (0 to 100)
     risk_score = 0
@@ -118,6 +126,8 @@ def run_static_analysis_pipeline(file_path: str) -> Dict[str, Any]:
 
     final_risk_score = min(final_risk_score, 100)
 
+    scan_duration = round(time.time() - start_time, 2)
+
     return {
         "filename": info["file_name"],
         "file_size": info["file_size"],
@@ -133,5 +143,6 @@ def run_static_analysis_pipeline(file_path: str) -> Dict[str, Any]:
         "recommended_action": recommended_action,
         "ml_prediction": ml_prediction["label"],
         "ml_confidence": ml_prediction["confidence"],
-        "final_risk_score": final_risk_score
+        "final_risk_score": final_risk_score,
+        "scan_duration": scan_duration
     }

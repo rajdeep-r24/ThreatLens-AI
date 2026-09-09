@@ -40,6 +40,7 @@ class AnalysisResult(Base):
     ml_prediction = Column(String(50), nullable=True)
     ml_confidence = Column(Float, nullable=True)
     final_risk_score = Column(Integer, default=0)
+    scan_duration = Column(Float, nullable=True)
 
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 

@@ -10,8 +10,8 @@ This module provides the complete Authentication, Token Management, and Role-Bas
 | :--- | :--- | :--- | :--- |
 | **Administrator** | `admin` (`admin@threatlens.ai`) | `AdminPassword123!` | User management, settings, policies, SIEM/API integration, full dashboard access |
 | **Security Analyst** | `analyst_sarah` (`analyst@threatlens.ai`) | `AnalystPassword123!` | File upload, static analysis scans, malware report review, threat monitor |
-| **SOC Team Member** | `soc_alex` (`soc@threatlens.ai`) | `SocPassword123!` | Detection logs monitoring, active threats tracking, alert history, operational reports |
-| **Researcher** | `researcher_elena` (`researcher@threatlens.ai`) | `ResearcherPassword123!` | Upload research samples, dataset access, malware family analysis, report export |
+| **SOC Team Member** | `soc_aman` (`soc@threatlens.ai`) | `SocPassword123!` | Detection logs monitoring, active threats tracking, alert history, operational reports |
+| **Researcher** | `researcher_mohit` (`researcher@threatlens.ai`) | `ResearcherPassword123!` | Upload research samples, dataset access, malware family analysis, report export |
 
 ---
 

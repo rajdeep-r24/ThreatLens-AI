@@ -53,8 +53,8 @@ def get_auth_header(client: TestClient, username: str, password: str = "AdminPas
     passwords = {
         "admin": "AdminPassword123!",
         "analyst_sarah": "AnalystPassword123!",
-        "soc_alex": "SocPassword123!",
-        "researcher_elena": "ResearcherPassword123!",
+        "soc_aman": "SocPassword123!",
+        "researcher_mohit": "ResearcherPassword123!",
     }
     pwd = passwords.get(username, password)
     login_res = client.post(
@@ -142,7 +142,7 @@ def test_get_current_user_profile(client):
 def test_refresh_token_endpoint(client):
     login_res = client.post(
         "/api/v1/auth/login",
-        json={"username_or_email": "soc_alex", "password": "SocPassword123!"}
+        json={"username_or_email": "soc_aman", "password": "SocPassword123!"}
     )
     refresh_token = login_res.json()["refresh_token"]
 
@@ -183,7 +183,7 @@ def test_analyst_access_scans(client):
 
 
 def test_soc_access_threat_feed(client):
-    headers = get_auth_header(client, "soc_alex")
+    headers = get_auth_header(client, "soc_aman")
     # SOC can access SOC threat feed
     response = client.get("/api/v1/soc/threat-feed", headers=headers)
     assert response.status_code == 200
@@ -195,7 +195,7 @@ def test_soc_access_threat_feed(client):
 
 
 def test_researcher_access_workspace(client):
-    headers = get_auth_header(client, "researcher_elena")
+    headers = get_auth_header(client, "researcher_mohit")
     # Researcher can access research samples
     response = client.get("/api/v1/researcher/samples", headers=headers)
     assert response.status_code == 200
@@ -208,12 +208,12 @@ def test_researcher_access_workspace(client):
 
 def test_granular_permission_check(client):
     # SOC member has 'logs:monitor' permission
-    headers = get_auth_header(client, "soc_alex")
+    headers = get_auth_header(client, "soc_aman")
     response = client.get("/api/v1/audit/logs", headers=headers)
     assert response.status_code == 200
 
     # Researcher does NOT have 'logs:monitor' permission -> 403 Forbidden
-    res_headers = get_auth_header(client, "researcher_elena")
+    res_headers = get_auth_header(client, "researcher_mohit")
     forbidden_res = client.get("/api/v1/audit/logs", headers=res_headers)
     assert forbidden_res.status_code == 403
     assert "Missing required permission" in forbidden_res.json()["detail"]
