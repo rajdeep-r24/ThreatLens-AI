@@ -6,6 +6,16 @@
 **Role:** Threat Monitoring Dashboard Developer  
 **Milestone:** Week 2 – Milestone 2
 
+![React](https://img.shields.io/badge/React-frontend-61DAFB?logo=react&logoColor=black)
+![Recharts](https://img.shields.io/badge/Recharts-data%20visualization-8884d8)
+![FastAPI](https://img.shields.io/badge/FastAPI-backend%20API-009688?logo=fastapi&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?logo=javascript&logoColor=black)
+![Axios](https://img.shields.io/badge/Axios-API%20calls-5A29E4?logo=axios&logoColor=white)
+![Git](https://img.shields.io/badge/Git-version%20control-F05032?logo=git&logoColor=white)
+![GitHub](https://img.shields.io/badge/GitHub-collaboration-181717?logo=github&logoColor=white)
+![Status](https://img.shields.io/badge/status-completed-brightgreen)
+
 ---
 
 ## 📌 Overview
@@ -155,3 +165,4 @@ This allows the dashboard to remain synchronized with the latest backend scan da
 │ • Threat Trends              │
 │ • Recent Threats             │
 └──────────────────────────────┘
+```
