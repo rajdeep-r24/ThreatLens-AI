@@ -1,11 +1,5 @@
 # ThreatLens-AI – Threat Monitoring Dashboard
 
-## Team 2 | Member 4
-
-**Member:** K. Vamshi  
-**Role:** Threat Monitoring Dashboard Developer  
-**Milestone:** Week 2 – Milestone 2
-
 ![React](https://img.shields.io/badge/React-frontend-61DAFB?logo=react&logoColor=black)
 ![Recharts](https://img.shields.io/badge/Recharts-data%20visualization-8884d8)
 ![FastAPI](https://img.shields.io/badge/FastAPI-backend%20API-009688?logo=fastapi&logoColor=white)
@@ -17,6 +11,18 @@
 ![Status](https://img.shields.io/badge/status-completed-brightgreen)
 
 ---
+
+
+
+
+
+
+## Team 2 | Member 4
+
+**Member:** K. Vamshi  
+**Role:** Threat Monitoring Dashboard Developer  
+**Milestone:** Week 2 – Milestone 2
+
 
 ## 📌 Overview
 
