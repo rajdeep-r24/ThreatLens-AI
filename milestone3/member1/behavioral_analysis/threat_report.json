@@ -1,0 +1,103 @@
+{
+    "report_metadata": {
+        "generated_at": "2026-09-13T14:48:22.682539+00:00",
+        "report_type": "AI Threat Prediction Report",
+        "system": "ThreatLens AI"
+    },
+    "file_information": {
+        "filename": "real_malware_sample.exe",
+        "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ml_analysis": {
+        "prediction": "Malware",
+        "confidence": 1.0
+    },
+    "behavioral_analysis": {
+        "behavior_count": 7,
+        "behavior_score": 100,
+        "critical_findings": 1,
+        "high_findings": 4,
+        "medium_findings": 2,
+        "low_findings": 0,
+        "findings": [
+            {
+                "behavior": "Process Injection",
+                "severity": "Critical",
+                "confidence": 0.95,
+                "evidence": [
+                    "Kernel32.dll -> VirtualAlloc",
+                    "Kernel32.dll -> WriteProcessMemory",
+                    "Kernel32.dll -> CreateRemoteThread"
+                ],
+                "description": "APIs associated with memory manipulation and remote thread creation were detected."
+            },
+            {
+                "behavior": "Suspicious PowerShell Execution",
+                "severity": "High",
+                "confidence": 0.8,
+                "evidence": [
+                    "powershell.exe -ExecutionPolicy Bypass -W Hidden"
+                ],
+                "description": "PowerShell-related commands or execution indicators were found in extracted strings."
+            },
+            {
+                "behavior": "Persistence",
+                "severity": "High",
+                "confidence": 0.88,
+                "evidence": [
+                    "cmd.exe /c reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
+                ],
+                "description": "Registry, startup, scheduled-task, or service persistence indicators were detected."
+            },
+            {
+                "behavior": "Payload Download / Network Retrieval",
+                "severity": "High",
+                "confidence": 0.92,
+                "evidence": [
+                    "Urlmon.dll -> URLDownloadToFileA",
+                    "http://malicious-site.com/payload.ps1"
+                ],
+                "description": "Network retrieval APIs or remote resource indicators were detected."
+            },
+            {
+                "behavior": "Command Execution",
+                "severity": "Medium",
+                "confidence": 0.8,
+                "evidence": [
+                    "cmd.exe /c reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
+                ],
+                "description": "Command shell or process execution indicators were detected."
+            },
+            {
+                "behavior": "Network Communication",
+                "severity": "Medium",
+                "confidence": 0.75,
+                "evidence": [
+                    "http://malicious-site.com/payload.ps1"
+                ],
+                "description": "Network communication indicators were detected."
+            },
+            {
+                "behavior": "YARA Rule Detection",
+                "severity": "High",
+                "confidence": 0.9,
+                "evidence": [
+                    {
+                        "rule_name": "Suspicious_PowerShell_Execution",
+                        "severity": "high"
+                    }
+                ],
+                "description": "One or more YARA rules matched the analyzed file."
+            }
+        ]
+    },
+    "threat_assessment": {
+        "final_threat_score": 100,
+        "threat_level": "Critical",
+        "threat_category": "Potential Trojan / Process Injection Malware"
+    },
+    "response": {
+        "recommended_action": "Quarantine immediately and escalate"
+    },
+    "security_summary": "The analyzed file presents a critical security threat. Multiple strong indicators or critical behavioral evidence were identified. Immediate containment and investigation are recommended."
+}
