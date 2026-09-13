@@ -1,0 +1,21 @@
+ThreatLens-AI
+│
+├── backend
+│
+├── frontend
+│   └── src
+│       ├── components
+│       │   └── Navbar.jsx       ← UPDATED
+│       │
+│       ├── pages
+│       │   ├── DashboardPage.jsx
+│       │   ├── UploadPage.jsx
+│       │   ├── AnalysisResultPage.jsx
+│       │   └── AlertsReportsPage.jsx  ← YOUR MEMBER 5 WORK
+│       │
+│       └── services
+│           └── api.js
+│
+├── models
+├── static_analysis
+└── README.md
