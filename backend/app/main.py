@@ -7,6 +7,7 @@ from app.db.init_db import setup_initial_data
 from app.api.v1.auth import router as auth_router
 from app.api.v1.protected_routes import router as protected_router
 from app.api.v1.files import router as files_router
+from app.api.v1.predictions import router as predictions_router
 
 
 @asynccontextmanager
@@ -38,10 +39,12 @@ app.add_middleware(
 app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(protected_router, prefix=settings.API_V1_STR)
 app.include_router(files_router, prefix=settings.API_V1_STR)
+app.include_router(predictions_router, prefix=settings.API_V1_STR)
 
 # Register aliases for frontend client compatibility (/api/...)
 app.include_router(auth_router, prefix="/api")
 app.include_router(files_router, prefix="/api")
+app.include_router(predictions_router, prefix="/api")
 
 
 @app.get("/", tags=["Health"])
