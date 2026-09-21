@@ -1,0 +1,14 @@
+ThreatLens-AI Dashboard Test File
+
+This is a harmless test sample created for testing the
+ThreatLens-AI malware detection and threat monitoring dashboard.
+
+File Type: Test Document
+Purpose: Dashboard Integration Testing
+Test ID: TL-AI-TEST-001
+
+No malicious code or executable content is included in this file.
+
+Expected Result:
+The file should be uploaded successfully, analyzed,
+stored in the database, and displayed in the dashboard.

@@ -235,3 +235,77 @@ export async function fetchFileDetail(id) {
     };
   }
 }
+
+
+
+export async function fetchThreatDistribution() {
+  try {
+    const res = await fetch(`${API_BASE}/dashboard/threat-distribution`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
+    if (!res.ok) throw new Error('API Error');
+    return await res.json();
+  } catch (err) {
+    console.warn('Backend API unavailable, using local fallback threat distribution:', err);
+    return {
+      "Benign Clean Document": 3,
+      "Credential Stealer / Mimikatz Variant": 1,
+      "Low Risk Unclassified File": 1,
+      "Potential Trojan Malware": 1
+    };
+  }
+}
+
+export async function fetchYaraSeverity() {
+  try {
+    const res = await fetch(`${API_BASE}/dashboard/yara-severity`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
+    if (!res.ok) throw new Error('API Error');
+    return await res.json();
+  } catch (err) {
+    console.warn('Backend API unavailable, using local fallback yara severity:', err);
+    return {
+      critical: 1,
+      high: 1,
+      medium: 1
+    };
+  }
+}
+
+export async function fetchTrends() {
+  try {
+    const res = await fetch(`${API_BASE}/dashboard/trends`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
+    if (!res.ok) throw new Error('API Error');
+    return await res.json();
+  } catch (err) {
+    console.warn('Backend API unavailable, using local fallback trends:', err);
+    return [
+      { date: "2026-09-10", count: 3 },
+      { date: "2026-09-11", count: 3 }
+    ];
+  }
+}
+
+export async function fetchThreatPredictionReport(fileId) {
+  try {
+    const res = await fetch(`${API_BASE}/predictions/${fileId}/report`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
+    if (!res.ok) throw new Error('API Error');
+    return await res.json();
+  } catch (err) {
+    console.warn(`Backend API unavailable, using local fallback AI report for file ${fileId}:`, err);
+    return null;
+  }
+}

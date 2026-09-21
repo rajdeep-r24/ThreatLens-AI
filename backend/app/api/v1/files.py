@@ -2,6 +2,7 @@ import os
 import shutil
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File as FastAPIFile
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from typing import List, Dict, Any, Optional
 
 from app.api.deps import get_db, get_current_user
@@ -121,3 +122,35 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
         system_status="Operational",
         active_rules=48
     )
+@router.get("/dashboard/threat-distribution")
+def get_threat_distribution(db: Session = Depends(get_db)):
+    """Count of files grouped by threat classification (real, populated field)."""
+    rows = (
+        db.query(AnalysisResult.threat_classification, func.count(AnalysisResult.id))
+        .group_by(AnalysisResult.threat_classification)
+        .all()
+    )
+    return {classification or "unclassified": count for classification, count in rows}
+
+
+@router.get("/dashboard/yara-severity")
+def get_yara_severity_breakdown(db: Session = Depends(get_db)):
+    """Count of YARA matches grouped by severity."""
+    rows = (
+        db.query(YARAResult.severity, func.count(YARAResult.id))
+        .group_by(YARAResult.severity)
+        .all()
+    )
+    return {severity or "unknown": count for severity, count in rows}
+
+
+@router.get("/dashboard/trends")
+def get_trends(db: Session = Depends(get_db)):
+    """Detection counts grouped by day for a trend chart."""
+    rows = (
+        db.query(func.date(File.uploaded_at), func.count(File.id))
+        .group_by(func.date(File.uploaded_at))
+        .order_by(func.date(File.uploaded_at))
+        .all()
+    )
+    return [{"date": str(date), "count": count} for date, count in rows]

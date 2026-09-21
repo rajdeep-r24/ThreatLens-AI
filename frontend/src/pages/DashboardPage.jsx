@@ -34,6 +34,8 @@ import {
   Line
 } from 'recharts';
 
+
+
 export default function DashboardPage({ onSelectFile, onNavigateUpload }) {
   const [stats, setStats] = useState(null);
   const [files, setFiles] = useState([]);
@@ -41,6 +43,9 @@ export default function DashboardPage({ onSelectFile, onNavigateUpload }) {
   const [error, setError] = useState('');
   const [lastUpdated, setLastUpdated] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [aiReport, setAiReport] = useState(null);
+  const [aiReportLoading, setAiReportLoading] = useState(false);
+  const [aiReportFile, setAiReportFile] = useState(null);
 
   // ---------------------------------------------------------
   // Load dashboard data
@@ -85,8 +90,22 @@ export default function DashboardPage({ onSelectFile, onNavigateUpload }) {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [loadData]);
+  },
+    [loadData]);
+  const handleViewAiReport = async (file) => {
+    setAiReportFile(file);
+    setAiReportLoading(true);
+    setAiReport(null);
 
+    const report = await fetchThreatPredictionReport(file.id);
+    setAiReport(report);
+    setAiReportLoading(false);
+  };
+
+  const closeAiReport = () => {
+    setAiReportFile(null);
+    setAiReport(null);
+  };
   // ---------------------------------------------------------
   // Malware distribution
   // ---------------------------------------------------------
@@ -190,10 +209,43 @@ export default function DashboardPage({ onSelectFile, onNavigateUpload }) {
       }));
   }, [files]);
 
+
+
+
+  // ---------------------------------------------------------
+  // YARA severity distribution
+  // ---------------------------------------------------------
+
+  const yaraSeverityDistribution = useMemo(() => {
+    const counts = {};
+
+    files.forEach((file) => {
+      (file.yara_results || []).forEach((match) => {
+        const severity = match.severity || 'unknown';
+        counts[severity] = (counts[severity] || 0) + 1;
+      });
+    });
+
+    return Object.entries(counts).map(([name, value]) => ({
+      name,
+      value
+    }));
+  }, [files]);
+
+
+
+
   // ---------------------------------------------------------
   // Chart values
   // ---------------------------------------------------------
 
+  const severityColors = {
+    critical: '#dc2626',
+    high: '#ef4444',
+    medium: '#f59e0b',
+    low: '#22c55e',
+    unknown: '#6b7280'
+  };
   const malwareColors = [
     '#ef4444',
     '#f59e0b',
@@ -230,7 +282,7 @@ export default function DashboardPage({ onSelectFile, onNavigateUpload }) {
   // ---------------------------------------------------------
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-800">
@@ -454,7 +506,49 @@ export default function DashboardPage({ onSelectFile, onNavigateUpload }) {
 
       {/* Distribution Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* YARA Severity Distribution */}
+        <div className="bg-[#111827] border border-gray-800 rounded-2xl p-6 shadow-xl">
+          <div className="flex items-center gap-2 mb-4">
+            <Zap className="w-5 h-5 text-amber-400" />
+            <div>
+              <h2 className="text-lg font-semibold text-white">
+                YARA Signature Severity
+              </h2>
+              <p className="text-xs text-gray-500">
+                Breakdown of matched rule severity
+              </p>
+            </div>
+          </div>
 
+          {yaraSeverityDistribution.length > 0 ? (
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={yaraSeverityDistribution}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
+                  <XAxis dataKey="name" stroke="#6b7280" tick={{ fill: '#9ca3af', fontSize: 12 }} />
+                  <YAxis allowDecimals={false} stroke="#6b7280" tick={{ fill: '#9ca3af', fontSize: 12 }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#111827',
+                      border: '1px solid #374151',
+                      borderRadius: '8px',
+                      color: '#fff'
+                    }}
+                  />
+                  <Bar dataKey="value" name="Matches" radius={[6, 6, 0, 0]}>
+                    {yaraSeverityDistribution.map((entry) => (
+                      <Cell key={entry.name} fill={severityColors[entry.name] || '#6b7280'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="h-72 flex items-center justify-center text-gray-500">
+              No YARA matches recorded yet.
+            </div>
+          )}
+        </div>
         {/* Malware distribution */}
         <div className="bg-[#111827] border border-gray-800 rounded-2xl p-6 shadow-xl">
 
@@ -674,19 +768,19 @@ export default function DashboardPage({ onSelectFile, onNavigateUpload }) {
                   score >= 80
                     ? 'Critical'
                     : score >= 60
-                    ? 'High'
-                    : score >= 30
-                    ? 'Medium'
-                    : 'Low';
+                      ? 'High'
+                      : score >= 30
+                        ? 'Medium'
+                        : 'Low';
 
                 const riskClass =
                   riskLevel === 'Critical'
                     ? 'bg-red-600/20 text-red-300 border-red-500/40'
                     : riskLevel === 'High'
-                    ? 'bg-red-500/10 text-red-400 border-red-500/30'
-                    : riskLevel === 'Medium'
-                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                    : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
+                      ? 'bg-red-500/10 text-red-400 border-red-500/30'
+                      : riskLevel === 'Medium'
+                        ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                        : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
 
                 return (
                   <tr
@@ -733,13 +827,12 @@ export default function DashboardPage({ onSelectFile, onNavigateUpload }) {
                         <div className="w-16 bg-gray-800 rounded-full h-2 overflow-hidden">
 
                           <div
-                            className={`h-full ${
-                              score >= 60
-                                ? 'bg-red-500'
-                                : score >= 30
+                            className={`h-full ${score >= 60
+                              ? 'bg-red-500'
+                              : score >= 30
                                 ? 'bg-amber-500'
                                 : 'bg-emerald-500'
-                            }`}
+                              }`}
                             style={{
                               width: `${Math.min(score, 100)}%`
                             }}
@@ -773,34 +866,157 @@ export default function DashboardPage({ onSelectFile, onNavigateUpload }) {
 
                     </td>
 
-                    <td className="px-6 py-4 text-right">
+                                        <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => onSelectFile(file.id)}
+                          className="inline-flex items-center text-xs font-medium text-blue-400 hover:text-blue-300 bg-blue-950/40 border border-blue-800/60 px-3 py-1.5 rounded-lg hover:bg-blue-900/60 transition-all"
+                        >
+                          <span>View Analysis</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
+                        </button>
 
-                      <button
-                        onClick={() => onSelectFile(file.id)}
-                        className="inline-flex items-center text-xs font-medium text-blue-400 hover:text-blue-300 bg-blue-950/40 border border-blue-800/60 px-3 py-1.5 rounded-lg hover:bg-blue-900/60 transition-all"
-                      >
-
-                        <span>
-                          View Analysis
-                        </span>
-
-                        <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
-
-                      </button>
-
+                        <button
+                          onClick={() => handleViewAiReport(file)}
+                          className="inline-flex items-center text-xs font-medium text-purple-400 hover:text-purple-300 bg-purple-950/40 border border-purple-800/60 px-3 py-1.5 rounded-lg hover:bg-purple-900/60 transition-all"
+                        >
+                          <span>AI Report</span>
+                        </button>
+                      </div>
                     </td>
 
                   </tr>
                 );
               })}
 
-            </tbody>
+                        </tbody>
 
           </table>
 
         </div>
 
       </div>
+
+      {/* AI Threat Prediction Report Modal */}
+      {aiReportFile && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#111827] border border-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto">
+
+            <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between sticky top-0 bg-[#111827]">
+              <h2 className="text-lg font-semibold text-white">
+                AI Threat Prediction Report
+              </h2>
+              <button
+                onClick={closeAiReport}
+                className="text-gray-400 hover:text-white text-xl leading-none"
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="text-sm text-gray-400">
+                File: <span className="text-white font-mono">{aiReportFile.filename}</span>
+              </div>
+
+              {aiReportLoading && (
+                <div className="flex items-center gap-2 text-gray-400 py-8 justify-center">
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span>Generating AI threat report...</span>
+                </div>
+              )}
+
+              {!aiReportLoading && !aiReport && (
+                <div className="text-gray-500 py-8 text-center">
+                  No AI report available for this file. It may not have completed
+                  static analysis yet, or the prediction service is unreachable.
+                </div>
+              )}
+
+              {!aiReportLoading && aiReport && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-gray-900/60 border border-gray-800 rounded-xl p-4">
+                      <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">
+                        Threat Level
+                      </div>
+                      <div className="text-xl font-bold text-red-400">
+                        {aiReport.threat_assessment?.threat_level || 'Unknown'}
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-900/60 border border-gray-800 rounded-xl p-4">
+                      <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">
+                        Final Threat Score
+                      </div>
+                      <div className="text-xl font-bold text-amber-400">
+                        {aiReport.threat_assessment?.final_threat_score ?? 'N/A'} / 100
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-900/60 border border-gray-800 rounded-xl p-4">
+                    <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">
+                      Threat Category
+                    </div>
+                    <div className="text-white">
+                      {aiReport.threat_assessment?.threat_category || 'Not classified'}
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-900/60 border border-gray-800 rounded-xl p-4">
+                    <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">
+                      Recommended Action
+                    </div>
+                    <div className="text-white">
+                      {aiReport.response?.recommended_action || 'None provided'}
+                    </div>
+                  </div>
+
+                  {aiReport.behavioral_analysis?.findings?.length > 0 && (
+                    <div>
+                      <div className="text-xs text-gray-400 uppercase tracking-wider mb-2">
+                        Behavioral Findings ({aiReport.behavioral_analysis.findings.length})
+                      </div>
+                      <div className="space-y-2">
+                        {aiReport.behavioral_analysis.findings.map((finding, idx) => (
+                          <div
+                            key={idx}
+                            className="bg-gray-900/60 border border-gray-800 rounded-lg p-3 text-sm"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-white font-medium">
+                                {finding.behavior}
+                              </span>
+                              <span className="text-xs text-red-400">
+                                {finding.severity}
+                              </span>
+                            </div>
+                            <div className="text-gray-400 text-xs mt-1">
+                              {finding.description}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {aiReport.security_summary && (
+                    <div className="bg-gray-900/60 border border-gray-800 rounded-xl p-4">
+                      <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">
+                        Summary
+                      </div>
+                      <div className="text-sm text-gray-300">
+                        {aiReport.security_summary}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
