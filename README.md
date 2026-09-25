@@ -1,291 +1,188 @@
-ThreatLens-AI – AI Threat Analytics Dashboard
+# ThreatLens-AI – AI Threat Analytics Dashboard
 
+![React](https://img.shields.io/badge/React-frontend-61DAFB?logo=react&logoColor=black)
+![Recharts](https://img.shields.io/badge/Recharts-data%20visualization-8884d8)
+![FastAPI](https://img.shields.io/badge/FastAPI-backend%20API-009688?logo=fastapi&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?logo=javascript&logoColor=black)
+![Axios](https://img.shields.io/badge/Axios-API%20calls-5A29E4?logo=axios&logoColor=white)
+![Git](https://img.shields.io/badge/Git-version%20control-F05032?logo=git&logoColor=white)
+![GitHub](https://img.shields.io/badge/GitHub-collaboration-181717?logo=github&logoColor=white)
+![Status](https://img.shields.io/badge/status-completed-brightgreen)
 
+---
 
+## Team 2 | Member 3
 
+**Member:** K. Vamshi  
+**Role:** AI Threat Analytics & Prediction Dashboard Developer  
+**Milestone:** Week 3 – Milestone 3
 
 
+## 📌 Overview
 
+As part of **Team 2's ThreatLens-AI project**, I worked on the **AI Threat Analytics and Prediction Dashboard** during Week 3 / Milestone 3.
 
+The dashboard extends the existing threat monitoring system by integrating AI-based threat prediction and report generation capabilities.
 
+The main goal of my contribution is to provide security analysts with a clear view of:
 
-Team 2 | Member 3
+- Threat analytics
+- AI-based threat assessment
+- Final threat score
+- Threat category
+- Recommended security action
+- Behavioral threat findings
+- AI-generated security summary
+- Recent analyzed files
 
-Member: K. Vamshi
-Role: AI Threat Analytics Dashboard Developer
-Milestone: Week 3 – Milestone 3
-Branch: feat/ai-analytics-dashboard
-Status: Completed
+---
 
-📌 Overview
+## 👨‍💻 My Contribution
 
-As part of Team 2's ThreatLens-AI project, I worked on the AI Threat Analytics Dashboard during Week 3 / Milestone 3.
+### AI Threat Analytics & Prediction Dashboard
 
-Building on the monitoring dashboard work from the previous milestone, I integrated the dashboard with the AI threat prediction workflow and completed the frontend-to-backend flow for generating and displaying AI-based threat reports for analyzed files.
+I extended the existing threat monitoring dashboard and implemented the following features:
 
-The main goal of this milestone was to provide security analysts with a deeper view of individual file threats through AI-generated analysis in addition to the existing static-analysis results.
+- Integrated AI threat prediction report functionality
+- Connected the React dashboard with prediction APIs
+- Added AI Threat Prediction Report modal
+- Added threat level display
+- Added final threat score display
+- Added threat category display
+- Added recommended action display
+- Added behavioral findings section
+- Added AI-generated security summary
+- Added loading state for AI report generation
+- Added error handling for failed AI report requests
+- Integrated the AI report with the existing file analysis data
+- Fixed frontend-to-backend API proxy connectivity
+- Tested AI report generation through the dashboard
 
-👨‍💻 My Contribution
+---
 
-AI Threat Analytics & Reporting
+## 📊 Dashboard Features
 
-I extended the existing React dashboard and implemented the following Week 3 features:
+### 1. AI Threat Prediction Report
 
-Integrated the AI threat prediction report workflow into the dashboard
+The dashboard provides an AI-generated report for analyzed files.
 
-Added an AI Report action for analyzed files
+The report displays:
 
-Added an AI Threat Prediction Report modal
+- Threat Level
+- Final Threat Score
+- Threat Category
+- Recommended Action
+- Behavioral Findings
+- Security Summary
 
-Displayed AI-generated threat level and final threat score
+This allows analysts to understand the security implications of an analyzed file without manually reviewing every analysis result.
 
-Displayed AI threat category and recommended action
+---
 
-Displayed behavioral analysis findings with severity and descriptions
+### 2. Threat Assessment
 
-Added AI security summary output
+The AI report provides an overall assessment of the analyzed file.
 
-Connected the frontend to the threat prediction report API
+Example information includes:
 
-Added loading-state handling for AI report generation
+- Threat severity
+- Final threat score
+- Threat classification
+- Security assessment
 
-Added error handling so the report view does not remain stuck when an API call fails
+The threat assessment helps analysts quickly understand the overall security risk associated with a file.
 
-Fixed the frontend import/integration issue for the AI report API function
+---
 
-Resolved the Vite frontend-to-FastAPI proxy connection issue
+### 3. Behavioral Findings
 
-Verified dashboard and AI report API communication through browser Network tools
+The AI report displays detected behavioral findings identified during analysis.
 
-🤖 AI Threat Report Features
+Each finding can include:
 
-1. AI Report Generation
+- Behavior name
+- Severity
+- Description
 
-Each analyzed file can be opened through the AI Report action from the Recent Threats table.
+For example:
 
-The dashboard requests the corresponding AI prediction report from the backend.
+- YARA rule detection
+- Suspicious activity
+- Potential malicious behavior
 
-API used:
+---
 
-GET /api/v1/predictions/{file_id}/report
+### 4. Recommended Security Action
 
-2. Threat Assessment
+The AI report provides a recommended action based on the generated threat assessment.
 
-The AI report displays:
+Examples include:
 
-Threat Level
+- Flag for security review
+- Investigate suspicious behavior
+- Review before execution
+- Monitor the file
 
-Final Threat Score
+This provides analysts with an immediate next-step recommendation.
 
-Threat Category
+---
 
-This gives analysts an additional AI-based interpretation of the static-analysis results.
+### 5. Security Summary
 
-3. Recommended Action
+The AI report includes a summarized security assessment of the analyzed file.
 
-The report displays a recommended security action based on the generated threat assessment.
+The summary combines the available analysis information into a readable format for security monitoring and investigation.
 
-Example:
+---
 
-Flag for security review
+### 6. AI Report Integration
 
-4. Behavioral Findings
+The dashboard supports:
 
-The dashboard displays individual behavioral findings returned by the AI report, including:
+- AI report generation
+- Loading state during report generation
+- API response handling
+- Error handling
+- Report modal display
+- Closing and reopening reports
 
-Behavior name
+The feature is integrated directly into the recent threats table using the **AI Report** action.
 
-Severity
+---
 
-Description
+## 🔄 Data Flow
 
-This makes the generated security reasoning easier to inspect at the file level.
-
-5. Security Summary
-
-The AI report also displays a concise security summary for the selected file so analysts can quickly understand the overall assessment without reviewing every finding individually.
-
-🔧 API Integration & Fixes
-
-Dashboard APIs
-
-Verified the existing dashboard endpoints:
-
-GET /api/v1/dashboard/stats   → 200 OK
-GET /api/v1/files             → 200 OK
-
-AI Prediction API
-
-Integrated the AI prediction report endpoint:
-
-GET /api/v1/predictions/{file_id}/report
-
-Frontend Proxy Fix
-
-Resolved the local Vite proxy connection problem by routing API requests to the IPv4 loopback address:
-
-target: 'http://127.0.0.1:8000'
-
-instead of:
-
-target: 'http://localhost:8000'
-
-This resolved the frontend proxy timeout seen during local testing.
-
-🔄 AI Report Data Flow
-
+```text
 ┌──────────────────────────────┐
-│ User selects a scanned file  │
-│ and clicks "AI Report"       │
-└──────────────┬───────────────┘
-               │
-               ▼
-┌──────────────────────────────┐
-│ React Dashboard              │
-│ handleViewAiReport()         │
-└──────────────┬───────────────┘
-               │
-               ▼
-┌──────────────────────────────┐
-│ Frontend API Service         │
-│ fetchThreatPredictionReport  │
-└──────────────┬───────────────┘
-               │
-               ▼
-┌──────────────────────────────┐
-│ Vite API Proxy               │
-│ /api → 127.0.0.1:8000       │
+│ Member 3                     │
+│ Database & Scan Logging      │
 └──────────────┬───────────────┘
                │
                ▼
 ┌──────────────────────────────┐
 │ FastAPI Backend              │
-│ /predictions/{id}/report     │
+│                              │
+│ Dashboard APIs               │
+│ File Analysis APIs           │
+│ Threat Prediction APIs       │
 └──────────────┬───────────────┘
                │
                ▼
 ┌──────────────────────────────┐
-│ AI Threat Prediction Result  │
+│ Member 3                     │
+│ React AI Analytics Dashboard │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│ Security Analytics UI        │
 │                              │
-│ • Threat Level               │
+│ • Threat Analytics           │
+│ • AI Threat Prediction      │
 │ • Threat Score               │
 │ • Threat Category            │
-│ • Recommended Action         │
 │ • Behavioral Findings        │
+│ • Recommended Action         │
 │ • Security Summary           │
-└──────────────┬───────────────┘
-               │
-               ▼
-┌──────────────────────────────┐
-│ AI Threat Prediction Report  │
-│ displayed in React modal     │
 └──────────────────────────────┘
-
-🧪 Testing & Validation
-
-The Week 3 implementation was validated locally using the running React and FastAPI applications.
-
-Verified
-
-Dashboard statistics API returns successful responses
-
-File listing API returns successful responses
-
-AI Report button opens the report modal
-
-AI prediction report request reaches the backend
-
-AI report response is rendered in the dashboard
-
-Loading state is cleared after the request completes
-
-Frontend/backend proxy communication works through Vite
-
-Browser Network tab confirms successful API communication
-
-Example validated flow
-
-Dashboard load
-     ↓
-/api/v1/dashboard/stats   → 200 OK
-/api/v1/files             → 200 OK
-     ↓
-AI Report clicked
-     ↓
-/api/v1/predictions/{file_id}/report
-     ↓
-AI report displayed successfully
-
-🛠 Technology Used
-
-React — dashboard UI and components
-
-Vite — frontend development server and API proxy
-
-JavaScript (ES6) — dashboard logic and API integration
-
-Recharts — data visualization from the dashboard milestone
-
-Lucide React — dashboard and security icons
-
-FastAPI — backend API integration
-
-Python — backend ecosystem and threat-analysis services
-
-Git & GitHub — version control and team collaboration
-
-📂 Main Frontend Changes
-
-Key files updated during Week 3:
-
-frontend/src/pages/DashboardPage.jsx
-frontend/src/services/api.js
-frontend/vite.config.js
-
-DashboardPage.jsx
-
-Added AI Report interaction
-
-Added AI report modal rendering
-
-Added threat assessment display
-
-Added behavioral findings display
-
-Added loading and error-state handling
-
-api.js
-
-Integrated fetchThreatPredictionReport(fileId)
-
-Connected the dashboard to the AI prediction report endpoint
-
-vite.config.js
-
-Updated the API proxy target for reliable local frontend-to-backend communication
-
-📌 Milestone 3 Result
-
-The Week 3 milestone extends the ThreatLens-AI dashboard from basic threat monitoring into AI-assisted threat analysis.
-
-The dashboard now allows an analyst to select an analyzed file and view an AI-generated threat prediction report containing assessment, score, category, recommended action, behavioral findings, and a security summary.
-
-🚀 Future Enhancements
-
-Add AI report history and comparison between scans
-
-Add export/download of AI threat reports
-
-Add analyst feedback on AI predictions
-
-Add trend analytics for AI-generated threat scores
-
-Add deeper correlation between YARA findings and AI assessments
-
-👤 Member
-
-K. Vamshi
-Team 2 – Member 3
-Role: AI Threat Analytics Dashboard Developer
-Week 3 / Milestone 3
-Branch: feat/ai-analytics-dashboard
