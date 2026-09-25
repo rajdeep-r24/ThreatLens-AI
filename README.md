@@ -1,174 +1,291 @@
-# ThreatLens-AI – Threat Monitoring Dashboard
-
-![React](https://img.shields.io/badge/React-frontend-61DAFB?logo=react&logoColor=black)
-![Recharts](https://img.shields.io/badge/Recharts-data%20visualization-8884d8)
-![FastAPI](https://img.shields.io/badge/FastAPI-backend%20API-009688?logo=fastapi&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?logo=javascript&logoColor=black)
-![Axios](https://img.shields.io/badge/Axios-API%20calls-5A29E4?logo=axios&logoColor=white)
-![Git](https://img.shields.io/badge/Git-version%20control-F05032?logo=git&logoColor=white)
-![GitHub](https://img.shields.io/badge/GitHub-collaboration-181717?logo=github&logoColor=white)
-![Status](https://img.shields.io/badge/status-completed-brightgreen)
-
----
+ThreatLens-AI – AI Threat Analytics Dashboard
 
 
 
 
 
 
-## Team 2 | Member 4
-
-**Member:** K. Vamshi  
-**Role:** Threat Monitoring Dashboard Developer  
-**Milestone:** Week 2 – Milestone 2
 
 
-## 📌 Overview
 
-As part of **Team 2's ThreatLens-AI project**, I worked on the **Threat Monitoring Dashboard** during Week 2 / Milestone 2.
 
-The dashboard consumes the threat detection and scan information provided through the backend APIs and presents it through an interactive monitoring interface.
+Team 2 | Member 3
 
-The main goal of my contribution is to provide security analysts with a clear view of:
+Member: K. Vamshi
+Role: AI Threat Analytics Dashboard Developer
+Milestone: Week 3 – Milestone 3
+Branch: feat/ai-analytics-dashboard
+Status: Completed
 
-- Overall scan activity
-- Detected threats
-- Malware distribution
-- Risk levels
-- Threat detection trends
-- Recent suspicious files
+📌 Overview
 
----
+As part of Team 2's ThreatLens-AI project, I worked on the AI Threat Analytics Dashboard during Week 3 / Milestone 3.
 
-## 👨‍💻 My Contribution
+Building on the monitoring dashboard work from the previous milestone, I integrated the dashboard with the AI threat prediction workflow and completed the frontend-to-backend flow for generating and displaying AI-based threat reports for analyzed files.
 
-### Threat Monitoring Dashboard
+The main goal of this milestone was to provide security analysts with a deeper view of individual file threats through AI-generated analysis in addition to the existing static-analysis results.
 
-I extended the existing dashboard and implemented the following monitoring features:
+👨‍💻 My Contribution
 
-- Integrated the React dashboard with backend APIs
-- Added security KPI cards
-- Added malware distribution visualization
-- Added risk-level distribution visualization
-- Added threat detection trend chart
-- Added recent threats monitoring table
-- Added risk classification
-- Added dashboard refresh functionality
-- Added automatic dashboard data refresh
-- Added loading and error handling
-- Integrated **Recharts** for data visualization
+AI Threat Analytics & Reporting
 
----
+I extended the existing React dashboard and implemented the following Week 3 features:
 
-## 📊 Dashboard Features
+Integrated the AI threat prediction report workflow into the dashboard
 
-### 1. Security KPIs
+Added an AI Report action for analyzed files
 
-The dashboard displays important security statistics such as:
+Added an AI Threat Prediction Report modal
 
-- Total Files Scanned
-- Malicious Threats
-- YARA Rule Matches
-- Average Threat Score
+Displayed AI-generated threat level and final threat score
 
-These values are retrieved from the backend dashboard statistics API.
+Displayed AI threat category and recommended action
 
----
+Displayed behavioral analysis findings with severity and descriptions
 
-### 2. Malware Distribution
+Added AI security summary output
 
-A visualization showing the distribution of detected malware/threat classifications.
+Connected the frontend to the threat prediction report API
 
-Example classifications include:
+Added loading-state handling for AI report generation
 
-- Potential Trojan Malware
-- Credential Stealer / Mimikatz Variant
-- Benign / Clean Files
+Added error handling so the report view does not remain stuck when an API call fails
 
----
+Fixed the frontend import/integration issue for the AI report API function
 
-### 3. Risk Level Distribution
+Resolved the Vite frontend-to-FastAPI proxy connection issue
 
-Files are categorized according to their risk score:
+Verified dashboard and AI report API communication through browser Network tools
 
-| Risk Score | Risk Level |
-|------------|------------|
-| 80 – 100 | Critical |
-| 60 – 79 | High |
-| 30 – 59 | Medium |
-| 0 – 29 | Low |
+🤖 AI Threat Report Features
 
-This provides a quick overview of the current threat severity.
+1. AI Report Generation
 
----
+Each analyzed file can be opened through the AI Report action from the Recent Threats table.
 
-### 4. Threat Detection Trend
+The dashboard requests the corresponding AI prediction report from the backend.
 
-A chart showing threat detection activity over time based on scan records received from the backend.
+API used:
 
-This helps provide a quick view of changes in threat activity.
+GET /api/v1/predictions/{file_id}/report
 
----
+2. Threat Assessment
 
-### 5. Recent Threats
+The AI report displays:
 
-The dashboard displays recently analyzed files along with information such as:
+Threat Level
 
-- File name
-- SHA256
-- Threat classification
-- Risk score
-- YARA matches
-- Risk level
-- Analysis details
+Final Threat Score
 
----
+Threat Category
 
-### 6. Dashboard Refresh
+This gives analysts an additional AI-based interpretation of the static-analysis results.
 
-The dashboard supports:
+3. Recommended Action
 
-- Manual refresh
-- Automatic data refresh
-- Last updated timestamp
-- Loading state
-- Error handling
+The report displays a recommended security action based on the generated threat assessment.
 
-This allows the dashboard to remain synchronized with the latest backend scan data.
+Example:
 
----
+Flag for security review
 
-## 🔄 Data Flow
+4. Behavioral Findings
 
-```text
+The dashboard displays individual behavioral findings returned by the AI report, including:
+
+Behavior name
+
+Severity
+
+Description
+
+This makes the generated security reasoning easier to inspect at the file level.
+
+5. Security Summary
+
+The AI report also displays a concise security summary for the selected file so analysts can quickly understand the overall assessment without reviewing every finding individually.
+
+🔧 API Integration & Fixes
+
+Dashboard APIs
+
+Verified the existing dashboard endpoints:
+
+GET /api/v1/dashboard/stats   → 200 OK
+GET /api/v1/files             → 200 OK
+
+AI Prediction API
+
+Integrated the AI prediction report endpoint:
+
+GET /api/v1/predictions/{file_id}/report
+
+Frontend Proxy Fix
+
+Resolved the local Vite proxy connection problem by routing API requests to the IPv4 loopback address:
+
+target: 'http://127.0.0.1:8000'
+
+instead of:
+
+target: 'http://localhost:8000'
+
+This resolved the frontend proxy timeout seen during local testing.
+
+🔄 AI Report Data Flow
+
 ┌──────────────────────────────┐
-│ Member 3                     │
-│ Database & Scan Logging      │
+│ User selects a scanned file  │
+│ and clicks "AI Report"       │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│ React Dashboard              │
+│ handleViewAiReport()         │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│ Frontend API Service         │
+│ fetchThreatPredictionReport  │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│ Vite API Proxy               │
+│ /api → 127.0.0.1:8000       │
 └──────────────┬───────────────┘
                │
                ▼
 ┌──────────────────────────────┐
 │ FastAPI Backend              │
-│                              │
-│ /api/v1/dashboard/stats      │
-│ /api/v1/files                │
+│ /predictions/{id}/report     │
 └──────────────┬───────────────┘
                │
                ▼
 ┌──────────────────────────────┐
-│ Member 4                     │
-│ React Threat Dashboard       │
+│ AI Threat Prediction Result  │
+│                              │
+│ • Threat Level               │
+│ • Threat Score               │
+│ • Threat Category            │
+│ • Recommended Action         │
+│ • Behavioral Findings        │
+│ • Security Summary           │
 └──────────────┬───────────────┘
                │
                ▼
 ┌──────────────────────────────┐
-│ Security Monitoring UI       │
-│                              │
-│ • KPIs                       │
-│ • Malware Distribution       │
-│ • Risk Distribution          │
-│ • Threat Trends              │
-│ • Recent Threats             │
+│ AI Threat Prediction Report  │
+│ displayed in React modal     │
 └──────────────────────────────┘
-```
+
+🧪 Testing & Validation
+
+The Week 3 implementation was validated locally using the running React and FastAPI applications.
+
+Verified
+
+Dashboard statistics API returns successful responses
+
+File listing API returns successful responses
+
+AI Report button opens the report modal
+
+AI prediction report request reaches the backend
+
+AI report response is rendered in the dashboard
+
+Loading state is cleared after the request completes
+
+Frontend/backend proxy communication works through Vite
+
+Browser Network tab confirms successful API communication
+
+Example validated flow
+
+Dashboard load
+     ↓
+/api/v1/dashboard/stats   → 200 OK
+/api/v1/files             → 200 OK
+     ↓
+AI Report clicked
+     ↓
+/api/v1/predictions/{file_id}/report
+     ↓
+AI report displayed successfully
+
+🛠 Technology Used
+
+React — dashboard UI and components
+
+Vite — frontend development server and API proxy
+
+JavaScript (ES6) — dashboard logic and API integration
+
+Recharts — data visualization from the dashboard milestone
+
+Lucide React — dashboard and security icons
+
+FastAPI — backend API integration
+
+Python — backend ecosystem and threat-analysis services
+
+Git & GitHub — version control and team collaboration
+
+📂 Main Frontend Changes
+
+Key files updated during Week 3:
+
+frontend/src/pages/DashboardPage.jsx
+frontend/src/services/api.js
+frontend/vite.config.js
+
+DashboardPage.jsx
+
+Added AI Report interaction
+
+Added AI report modal rendering
+
+Added threat assessment display
+
+Added behavioral findings display
+
+Added loading and error-state handling
+
+api.js
+
+Integrated fetchThreatPredictionReport(fileId)
+
+Connected the dashboard to the AI prediction report endpoint
+
+vite.config.js
+
+Updated the API proxy target for reliable local frontend-to-backend communication
+
+📌 Milestone 3 Result
+
+The Week 3 milestone extends the ThreatLens-AI dashboard from basic threat monitoring into AI-assisted threat analysis.
+
+The dashboard now allows an analyst to select an analyzed file and view an AI-generated threat prediction report containing assessment, score, category, recommended action, behavioral findings, and a security summary.
+
+🚀 Future Enhancements
+
+Add AI report history and comparison between scans
+
+Add export/download of AI threat reports
+
+Add analyst feedback on AI predictions
+
+Add trend analytics for AI-generated threat scores
+
+Add deeper correlation between YARA findings and AI assessments
+
+👤 Member
+
+K. Vamshi
+Team 2 – Member 3
+Role: AI Threat Analytics Dashboard Developer
+Week 3 / Milestone 3
+Branch: feat/ai-analytics-dashboard
