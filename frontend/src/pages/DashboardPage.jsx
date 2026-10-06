@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import {
   fetchDashboardStats,
   fetchFileList
@@ -41,37 +47,45 @@ export default function DashboardPage({ onSelectFile, onNavigateUpload }) {
   const [error, setError] = useState('');
   const [lastUpdated, setLastUpdated] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const requestInFlight = useRef(false);
 
   // ---------------------------------------------------------
   // Load dashboard data
   // ---------------------------------------------------------
+const loadData = useCallback(async (isRefresh = false) => {
+  // Prevent duplicate API requests if a previous request is still running
+  if (requestInFlight.current) {
+    return;
+  }
 
-  const loadData = useCallback(async (isRefresh = false) => {
-    try {
-      if (isRefresh) {
-        setRefreshing(true);
-      } else {
-        setLoading(true);
-      }
+  requestInFlight.current = true;
 
-      setError('');
-
-      const [statsData, filesData] = await Promise.all([
-        fetchDashboardStats(),
-        fetchFileList()
-      ]);
-
-      setStats(statsData);
-      setFiles(Array.isArray(filesData) ? filesData : []);
-      setLastUpdated(new Date());
-    } catch (err) {
-      console.error('Dashboard loading error:', err);
-      setError('Unable to load monitoring data.');
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
+  try {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
     }
-  }, []);
+
+    setError('');
+
+    const [statsData, filesData] = await Promise.all([
+      fetchDashboardStats(),
+      fetchFileList()
+    ]);
+
+    setStats(statsData);
+    setFiles(Array.isArray(filesData) ? filesData : []);
+    setLastUpdated(new Date());
+  } catch (err) {
+    console.error('Dashboard loading error:', err);
+    setError('Unable to load monitoring data.');
+  } finally {
+    requestInFlight.current = false;
+    setLoading(false);
+    setRefreshing(false);
+  }
+}, []);
 
   // Initial load
   useEffect(() => {
@@ -80,12 +94,15 @@ export default function DashboardPage({ onSelectFile, onNavigateUpload }) {
 
   // Automatic refresh every 30 seconds
   useEffect(() => {
-    const interval = setInterval(() => {
+  const interval = setInterval(() => {
+    // Avoid unnecessary API calls when the dashboard tab is hidden
+    if (document.visibilityState === 'visible') {
       loadData(true);
-    }, 30000);
+    }
+  }, 30000);
 
-    return () => clearInterval(interval);
-  }, [loadData]);
+  return () => clearInterval(interval);
+}, [loadData]);
 
   // ---------------------------------------------------------
   // Malware distribution
