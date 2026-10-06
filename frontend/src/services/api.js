@@ -235,3 +235,28 @@ export async function fetchFileDetail(id) {
     };
   }
 }
+// -------------------------------------------------------------
+// AI Threat Prediction & Report API
+// -------------------------------------------------------------
+
+export async function fetchThreatPredictionReport(fileId) {
+  try {
+    const res = await fetch(`${API_BASE}/predictions/${fileId}/report`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(
+        errData.detail || 'Failed to fetch threat prediction report'
+      );
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.warn('Threat prediction report API error:', err);
+    throw err;
+  }
+}

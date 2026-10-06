@@ -212,7 +212,7 @@ export default function UploadPage({ onUploadComplete }) {
               </div>
             ) : (
               <div className="max-w-md mx-auto space-y-3 pt-2">
-                <div className="flex flex-col xs:flex-row sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-gray-300">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-gray-300">
                   <span className="flex items-center min-w-0">
                     <RefreshCw className="w-3.5 h-3.5 mr-1.5 flex-shrink-0 animate-spin text-blue-400" />
                     <span className="truncate">
@@ -252,4 +252,31 @@ export default function UploadPage({ onUploadComplete }) {
           </p>
         </div>
 
-        <div className="bg-[#111827] border border-gray
+        <div className="bg-[#111827] border border-gray-800 rounded-xl p-4 space-y-2">
+          <div className="text-emerald-400 font-semibold text-sm flex items-center">
+            <CheckCircle2 className="w-4 h-4 mr-1.5 flex-shrink-0" />
+            Multi-Layer Detection
+          </div>
+
+          <p className="text-xs text-gray-400 leading-relaxed">
+            Combines PE analysis, hashes, extracted indicators, machine
+            learning, and YARA signatures.
+          </p>
+        </div>
+
+        <div className="bg-[#111827] border border-gray-800 rounded-xl p-4 space-y-2">
+          <div className="text-amber-400 font-semibold text-sm flex items-center">
+            <AlertCircle className="w-4 h-4 mr-1.5 flex-shrink-0" />
+            Threat Intelligence
+          </div>
+
+          <p className="text-xs text-gray-400 leading-relaxed">
+            Suspicious indicators and threat classifications are presented
+            clearly for security review.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  );
+}
