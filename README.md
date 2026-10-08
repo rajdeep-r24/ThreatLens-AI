@@ -1,174 +1,69 @@
-# ThreatLens-AI – Threat Monitoring Dashboard
+# ThreatLens-AI – Dual-Engine Threat Intelligence Platform
 
 ![React](https://img.shields.io/badge/React-frontend-61DAFB?logo=react&logoColor=black)
-![Recharts](https://img.shields.io/badge/Recharts-data%20visualization-8884d8)
 ![FastAPI](https://img.shields.io/badge/FastAPI-backend%20API-009688?logo=fastapi&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?logo=javascript&logoColor=black)
-![Axios](https://img.shields.io/badge/Axios-API%20calls-5A29E4?logo=axios&logoColor=white)
-![Git](https://img.shields.io/badge/Git-version%20control-F05032?logo=git&logoColor=white)
-![GitHub](https://img.shields.io/badge/GitHub-collaboration-181717?logo=github&logoColor=white)
 ![Status](https://img.shields.io/badge/status-completed-brightgreen)
-
----
-
-
-
-
-
-
-## Team 2 | Member 4
-
-**Member:** K. Vamshi  
-**Role:** Threat Monitoring Dashboard Developer  
-**Milestone:** Week 2 – Milestone 2
-
 
 ## 📌 Overview
 
-As part of **Team 2's ThreatLens-AI project**, I worked on the **Threat Monitoring Dashboard** during Week 2 / Milestone 2.
+**ThreatLens-AI** is a professional, Dual-Engine Threat Intelligence Platform built for Security Operations Centers (SOC). It provides real-time malware analysis, threat monitoring, and actionable intelligence to security analysts.
 
-The dashboard consumes the threat detection and scan information provided through the backend APIs and presents it through an interactive monitoring interface.
-
-The main goal of my contribution is to provide security analysts with a clear view of:
-
-- Overall scan activity
-- Detected threats
-- Malware distribution
-- Risk levels
-- Threat detection trends
-- Recent suspicious files
+By combining traditional static analysis with advanced machine learning, ThreatLens-AI can accurately detect both known malware signatures and zero-day threats through behavioral prediction.
 
 ---
 
-## 👨‍💻 My Contribution
+## 🚀 Key Features
 
-### Threat Monitoring Dashboard
+### 1. Dual-Engine Analysis
+- **Static & Heuristic Analysis:** Instantly extracts PE headers, strings, network indicators, and calculates hashes. Utilizes custom **YARA rules** to identify known malicious byte patterns.
+- **Machine Learning Prediction:** Employs a **Random Forest Classifier** trained on the ClaMP dataset to analyze file features and predict malicious behavior, catching zero-day threats that evade static signatures.
 
-I extended the existing dashboard and implemented the following monitoring features:
+### 2. Threat Monitoring Dashboard
+An interactive, real-time dashboard providing security analysts with a clear view of:
+- Total Scans and Threat Detections
+- Malware Classification Distribution
+- Risk Level Categorization (Low, Medium, High, Critical)
+- Recent Threat Telemetry
 
-- Integrated the React dashboard with backend APIs
-- Added security KPI cards
-- Added malware distribution visualization
-- Added risk-level distribution visualization
-- Added threat detection trend chart
-- Added recent threats monitoring table
-- Added risk classification
-- Added dashboard refresh functionality
-- Added automatic dashboard data refresh
-- Added loading and error handling
-- Integrated **Recharts** for data visualization
+### 3. Detailed Intelligence Reports
+- Comprehensive breakdown of triggered YARA rules.
+- AI Confidence Scores and behavioral capability mappings.
+- Recommended mitigation actions for SOC teams.
 
----
-
-## 📊 Dashboard Features
-
-### 1. Security KPIs
-
-The dashboard displays important security statistics such as:
-
-- Total Files Scanned
-- Malicious Threats
-- YARA Rule Matches
-- Average Threat Score
-
-These values are retrieved from the backend dashboard statistics API.
+### 4. Professional UI/UX
+- Fully responsive interface built with React and Tailwind CSS.
+- Synchronized Light/Dark mode for analyst comfort.
+- Real-time data visualization using Recharts.
 
 ---
 
-### 2. Malware Distribution
+## 🛠️ Technology Stack
 
-A visualization showing the distribution of detected malware/threat classifications.
-
-Example classifications include:
-
-- Potential Trojan Malware
-- Credential Stealer / Mimikatz Variant
-- Benign / Clean Files
+- **Frontend:** React, Vite, Tailwind CSS, Recharts
+- **Backend:** FastAPI, Python (Scikit-Learn, Joblib)
+- **Database:** SQLite / SQLAlchemy
 
 ---
 
-### 3. Risk Level Distribution
+## ⚙️ Running Locally
 
-Files are categorized according to their risk score:
+1. **Backend Setup:**
+   ```bash
+   cd backend
+   python -m venv .venv
+   .venv\Scripts\activate
+   pip install -r requirements.txt
+   uvicorn app.main:app --reload
+   ```
 
-| Risk Score | Risk Level |
-|------------|------------|
-| 80 – 100 | Critical |
-| 60 – 79 | High |
-| 30 – 59 | Medium |
-| 0 – 29 | Low |
+2. **Frontend Setup:**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
 
-This provides a quick overview of the current threat severity.
-
----
-
-### 4. Threat Detection Trend
-
-A chart showing threat detection activity over time based on scan records received from the backend.
-
-This helps provide a quick view of changes in threat activity.
-
----
-
-### 5. Recent Threats
-
-The dashboard displays recently analyzed files along with information such as:
-
-- File name
-- SHA256
-- Threat classification
-- Risk score
-- YARA matches
-- Risk level
-- Analysis details
-
----
-
-### 6. Dashboard Refresh
-
-The dashboard supports:
-
-- Manual refresh
-- Automatic data refresh
-- Last updated timestamp
-- Loading state
-- Error handling
-
-This allows the dashboard to remain synchronized with the latest backend scan data.
-
----
-
-## 🔄 Data Flow
-
-```text
-┌──────────────────────────────┐
-│ Member 3                     │
-│ Database & Scan Logging      │
-└──────────────┬───────────────┘
-               │
-               ▼
-┌──────────────────────────────┐
-│ FastAPI Backend              │
-│                              │
-│ /api/v1/dashboard/stats      │
-│ /api/v1/files                │
-└──────────────┬───────────────┘
-               │
-               ▼
-┌──────────────────────────────┐
-│ Member 4                     │
-│ React Threat Dashboard       │
-└──────────────┬───────────────┘
-               │
-               ▼
-┌──────────────────────────────┐
-│ Security Monitoring UI       │
-│                              │
-│ • KPIs                       │
-│ • Malware Distribution       │
-│ • Risk Distribution          │
-│ • Threat Trends              │
-│ • Recent Threats             │
-└──────────────────────────────┘
-```
+3. **Access the Application:**
+   Open your browser and navigate to `http://localhost:5173` (or the port provided by Vite).
