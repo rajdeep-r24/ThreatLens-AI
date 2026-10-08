@@ -77,13 +77,14 @@ export async function fetchDashboardStats() {
   } catch (err) {
     console.warn('Backend API unavailable, using local fallback stats:', err);
     return {
-      total_scans: 3,
-      completed_scans: 3,
+      total_scans: 4,
+      completed_scans: 4,
       malicious_threats: 2,
       yara_matches: 3,
-      avg_risk_score: 60.7,
+      avg_risk_score: 54.3,
       system_status: 'Operational',
-      active_rules: 48
+      active_rules: 48,
+      ai_model_accuracy: 96.4
     };
   }
 }
@@ -109,11 +110,13 @@ export async function fetchFileList() {
         sha256_hash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         file_type: "PE32 Executable (GUI) Intel 80386, for MS Windows",
         status: "completed",
-        uploaded_at: new Date().toISOString(),
+        uploaded_at: new Date(Date.now() - 3600000).toISOString(),
         analysis_result: {
           risk_score: 82,
-          threat_classification: "Potential Trojan Malware",
-          recommended_action: "Escalate to Security Analyst for Investigation"
+          threat_classification: "Trojan.Generic / Downloader",
+          recommended_action: "Quarantine file and isolate source endpoint",
+          ml_prediction: "Malware",
+          ml_confidence: 0.948
         },
         yara_results: [
           { id: 1, rule_name: "Suspicious_PowerShell_Execution", severity: "high", tags: ["trojan", "downloader"] }
@@ -128,14 +131,16 @@ export async function fetchFileList() {
         sha256_hash: "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
         file_type: "PE32+ Executable DLL (console) x86-64",
         status: "completed",
-        uploaded_at: new Date().toISOString(),
+        uploaded_at: new Date(Date.now() - 7200000).toISOString(),
         analysis_result: {
           risk_score: 95,
-          threat_classification: "Credential Stealer / Mimikatz Variant",
-          recommended_action: "Quarantine Immediately & Alert Incident Response Team"
+          threat_classification: "CredentialStealer.MimikatzVariant",
+          recommended_action: "Immediate quarantine & initiate credential revocation",
+          ml_prediction: "Malware",
+          ml_confidence: 0.982
         },
         yara_results: [
-          { id: 3, rule_name: "Mimikatz_Credential_Dump", severity: "critical", tags: ["credential_dump"] }
+          { id: 3, rule_name: "Mimikatz_Credential_Dump", severity: "critical", tags: ["credential_dump", "lsass"] }
         ]
       },
       {
@@ -145,13 +150,15 @@ export async function fetchFileList() {
         file_size: 512000,
         md5_hash: "1b3231655cebb7a1f783eddf27d254ca",
         sha256_hash: "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
-        file_type: "PDF document, version 1.7",
+        file_type: "PDF Document (Adobe Acrobat v1.7)",
         status: "completed",
-        uploaded_at: new Date().toISOString(),
+        uploaded_at: new Date(Date.now() - 86400000).toISOString(),
         analysis_result: {
           risk_score: 5,
-          threat_classification: "Benign Clean Document",
-          recommended_action: "No Action Required"
+          threat_classification: "Clean Document",
+          recommended_action: "No action needed (Allow file)",
+          ml_prediction: "Benign",
+          ml_confidence: 0.995
         },
         yara_results: []
       }
@@ -177,19 +184,34 @@ export async function fetchFileDetail(id) {
       file_size: id == 2 ? 1048576 : (id == 3 ? 512000 : 245800),
       md5_hash: id == 2 ? "098f6bcd4621d373cade4e832627b4f6" : "5d41402abc4b2a76b9719d911017c592",
       sha256_hash: id == 2 ? "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08" : "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      file_type: id == 2 ? "PE32+ Executable DLL (console) x86-64, for MS Windows" : "PE32 Executable (GUI) Intel 80386, for MS Windows",
+      file_type: id == 2 ? "PE32+ Executable DLL (console) x86-64, for MS Windows" : (id == 3 ? "PDF Document (Adobe Acrobat v1.7)" : "PE32 Executable (GUI) Intel 80386, for MS Windows"),
       status: "completed",
       uploaded_at: new Date().toISOString(),
       analysis_result: id == 2 ? {
         id: 2,
         file_id: 2,
-        pe_headers: { entry_point: "0x10001200", number_of_sections: 4, sections: [".text", ".data", ".rsrc", ".reloc"], subsystem: "Windows DLL" },
+        pe_headers: { entry_point: "0x10001200", number_of_sections: 4, sections: [".text", ".data", ".rsrc", ".reloc"], subsystem: "Windows DLL", image_base: "0x10000000" },
         extracted_strings: ["mimikatz", "sekurlsa::logonpasswords", "lsass.exe", "OpenProcessToken", "AdjustTokenPrivileges"],
-        suspicious_apis: ["Kernel32.dll -> OpenProcess", "Advapi32.dll -> AdjustTokenPrivileges"],
+        suspicious_apis: ["Kernel32.dll -> OpenProcess", "Advapi32.dll -> AdjustTokenPrivileges", "Advapi32.dll -> LookupPrivilegeValueA"],
         network_indicators: { urls: [], ips: ["103.253.144.10"] },
         risk_score: 95,
-        threat_classification: "Credential Stealer / Mimikatz Variant",
-        recommended_action: "Quarantine Immediately & Alert Incident Response Team",
+        threat_classification: "CredentialStealer.MimikatzVariant",
+        recommended_action: "Immediate quarantine & initiate credential revocation",
+        ml_prediction: "Malware",
+        ml_confidence: 0.982,
+        created_at: new Date().toISOString()
+      } : (id == 3 ? {
+        id: 3,
+        file_id: 3,
+        pe_headers: null,
+        extracted_strings: ["Adobe Acrobat Reader", "Annual Financial Overview", "Confidential Internal Use"],
+        suspicious_apis: [],
+        network_indicators: { urls: ["https://company-portal.internal/reports"], ips: [] },
+        risk_score: 5,
+        threat_classification: "Clean Document",
+        recommended_action: "No action needed (Allow file)",
+        ml_prediction: "Benign",
+        ml_confidence: 0.995,
         created_at: new Date().toISOString()
       } : {
         id: 1,
@@ -222,16 +244,109 @@ export async function fetchFileDetail(id) {
           ips: ["185.220.101.5", "192.0.2.14"]
         },
         risk_score: 82,
-        threat_classification: "Potential Trojan Malware",
-        recommended_action: "Escalate to Security Analyst for Investigation",
+        threat_classification: "Trojan.Generic / Downloader",
+        recommended_action: "Quarantine file and isolate source endpoint",
+        ml_prediction: "Malware",
+        ml_confidence: 0.948,
         created_at: new Date().toISOString()
-      },
+      }),
       yara_results: id == 2 ? [
         { id: 3, file_id: 2, rule_name: "Mimikatz_Credential_Dump", severity: "critical", tags: ["credential_dump", "mimikatz"], matched_strings: ["$str1 = sekurlsa::logonpasswords"], matched_at: new Date().toISOString() }
-      ] : [
+      ] : (id == 3 ? [] : [
         { id: 1, file_id: 1, rule_name: "Suspicious_PowerShell_Execution", severity: "high", tags: ["trojan", "downloader", "powershell"], matched_strings: ["$s1 = powershell.exe -ExecutionPolicy Bypass", "$s2 = URLDownloadToFileA"], matched_at: new Date().toISOString() },
         { id: 2, file_id: 1, rule_name: "Persistence_Registry_Modification", severity: "medium", tags: ["persistence", "registry"], matched_strings: ["$reg = Software\\Microsoft\\Windows\\CurrentVersion\\Run"], matched_at: new Date().toISOString() }
-      ]
+      ])
+    };
+  }
+}
+
+// -------------------------------------------------------------
+// AI Prediction API
+// -------------------------------------------------------------
+
+export async function fetchPredictionReport(fileId) {
+  try {
+    const res = await fetch(`${API_BASE}/predictions/${fileId}/report`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.detail || 'Failed to fetch AI prediction report');
+    }
+    return await res.json();
+  } catch (err) {
+    console.warn('Backend Prediction API unavailable, using local mock structured report:', err);
+    const isClean = fileId == 3;
+    const isCrit = fileId == 2;
+    
+    return {
+      report_metadata: {
+        generated_at: new Date().toISOString(),
+        report_type: "AI Threat Prediction Report",
+        system: "ThreatLens AI Dual-Engine"
+      },
+      file_information: {
+        filename: isCrit ? "payload_sample.dll" : (isClean ? "quarterly_report.pdf" : "invoice.exe"),
+        sha256_hash: isCrit ? "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08" : "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      ml_analysis: {
+        prediction: isClean ? "Benign" : "Malware",
+        confidence: isCrit ? 0.982 : (isClean ? 0.995 : 0.948)
+      },
+      behavioral_analysis: {
+        behavior_count: isClean ? 0 : (isCrit ? 4 : 3),
+        behavior_score: isClean ? 0 : (isCrit ? 95 : 82),
+        critical_findings: isCrit ? 2 : 0,
+        high_findings: isCrit ? 1 : 2,
+        medium_findings: isCrit ? 1 : 1,
+        low_findings: 0,
+        findings: isClean ? [] : (isCrit ? [
+          {
+            behavior: "Credential Dumping",
+            severity: "Critical",
+            confidence: 0.98,
+            evidence: ["sekurlsa::logonpasswords string match", "OpenProcess call to lsass.exe"],
+            description: "Binary contains explicit logic and API sequences known to harvest credentials from memory."
+          },
+          {
+            behavior: "Process Memory Manipulation",
+            severity: "High",
+            confidence: 0.94,
+            evidence: ["VirtualAlloc", "WriteProcessMemory imports"],
+            description: "Allocates and writes executable memory in external target processes."
+          }
+        ] : [
+          {
+            behavior: "Suspicious PowerShell Downloader",
+            severity: "High",
+            confidence: 0.95,
+            evidence: ["powershell.exe -ExecutionPolicy Bypass", "URLDownloadToFileA import"],
+            description: "Spawns hidden PowerShell processes to download remote secondary payloads."
+          },
+          {
+            behavior: "Persistence Installation",
+            severity: "Medium",
+            confidence: 0.88,
+            evidence: ["HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run registry key modification"],
+            description: "Establishes persistence to survive system reboot."
+          }
+        ])
+      },
+      threat_assessment: {
+        final_threat_score: isClean ? 5 : (isCrit ? 95 : 82),
+        threat_level: isClean ? "Low" : (isCrit ? "Critical" : "High"),
+        threat_category: isClean ? "Benign Document" : (isCrit ? "Credential Stealer / Mimikatz" : "Trojan Downloader")
+      },
+      response: {
+        recommended_action: isClean ? "No action required (Safe file)" : (isCrit ? "Immediate quarantine and credential rotation" : "Quarantine sample and inspect endpoint activity")
+      },
+      security_summary: isClean 
+        ? "No significant malicious behavioral evidence or threat indicators were detected. The file is considered benign."
+        : (isCrit 
+          ? "The analyzed sample presents a critical threat. Critical credential access and memory manipulation behaviors were detected with 98.2% AI confidence." 
+          : "The analyzed sample presents high malicious threat probability with confirmed downloader patterns and persistence mechanisms.")
     };
   }
 }

@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-[#0B0F19] text-gray-100 selection:bg-blue-500 selection:text-white;
+    @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-300 selection:bg-blue-500 selection:text-white transition-colors duration-200;
   }
 }
 

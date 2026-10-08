@@ -12,6 +12,23 @@ export default function App() {
     role: 'Security Analyst'
   });
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'upload' | 'results'
+  const [theme, setTheme] = useState(
+    localStorage.getItem('theme') || 'light'
+  );
+  
+  React.useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
+
   const [selectedFileId, setSelectedFileId] = useState(1);
 
   const handleLoginSuccess = (user) => {
@@ -38,12 +55,14 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-gray-100 flex flex-col">
+    <div className={`min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-300 flex flex-col transition-colors duration-200`}>
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         currentUser={currentUser}
         onLogout={handleLogout}
+        theme={theme}
+        toggleTheme={toggleTheme}
       />
 
       <main className="flex-grow">
@@ -63,8 +82,8 @@ export default function App() {
         )}
       </main>
 
-      <footer className="border-t border-gray-800 bg-[#0B0F19] py-4 text-center text-xs text-gray-500 font-mono">
-        ThreatLens AI Platform • Milestone 1 (Member 1 Database & Member 2 UI Integration)
+      <footer className="border-t border-slate-200 dark:border-slate-800/50 bg-white dark:bg-slate-950 py-6 text-center text-sm text-slate-500 dark:text-slate-400 transition-colors">
+        &copy; {new Date().getFullYear()} ThreatLens AI. All rights reserved.
       </footer>
     </div>
   );
