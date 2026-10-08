@@ -1,22 +1,67 @@
 import React, { useState, useEffect } from 'react';
-import { fetchFileDetail } from '../services/api';
-import { ShieldAlert, ShieldCheck, Copy, Check, FileCode, Terminal, Globe, AlertTriangle, Cpu, Layers } from 'lucide-react';
+import {
+  fetchFileDetail,
+  fetchThreatPredictionReport
+} from '../services/api';
+
+import {
+  ShieldAlert,
+  ShieldCheck,
+  Copy,
+  Check,
+  FileCode,
+  Terminal,
+  Globe,
+  AlertTriangle,
+  Cpu,
+  Layers,
+  Bell,
+  CheckCircle2,
+  RefreshCw,
+  Activity,
+  Brain,
+  XCircle
+} from 'lucide-react';
 
 export default function AnalysisResultPage({ fileId }) {
   const [fileData, setFileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [copiedHash, setCopiedHash] = useState(null);
+  const [predictionData, setPredictionData] = useState(null);
+  const [predictionLoading, setPredictionLoading] = useState(false);
+  const [predictionError, setPredictionError] = useState(null);
 
   useEffect(() => {
-    async function loadDetail() {
-      setLoading(true);
-      const data = await fetchFileDetail(fileId || 1);
+  async function loadDetail() {
+    const currentFileId = fileId || 1;
+
+    setLoading(true);
+    setPredictionError(null);
+
+    try {
+      const data = await fetchFileDetail(currentFileId);
       setFileData(data);
+    } finally {
       setLoading(false);
     }
-    loadDetail();
-  }, [fileId]);
+
+    // Fetch AI threat prediction/report
+    setPredictionLoading(true);
+
+    try {
+      const prediction = await fetchThreatPredictionReport(currentFileId);
+      setPredictionData(prediction);
+    } catch (err) {
+      console.warn('AI threat prediction unavailable:', err);
+      setPredictionError(err.message);
+    } finally {
+      setPredictionLoading(false);
+    }
+  }
+
+  loadDetail();
+}, [fileId]);
 
   const copyToClipboard = (text, label) => {
     navigator.clipboard.writeText(text);
@@ -38,9 +83,182 @@ export default function AnalysisResultPage({ fileId }) {
   const score = analysis.risk_score ?? 0;
   const isHigh = score >= 60;
   const isMedium = score >= 30 && score < 60;
+  const threatReport = predictionData?.threat_report || {};
+  const notification = predictionData?.notification || {};
+  const statusUpdate = predictionData?.status_update || {};
+
+  const finalThreatScore =
+  threatReport.final_threat_score ??
+  threatReport.threat_score ??
+  notification.threat_score ??
+  score;
+
+  const threatLevel =
+  threatReport.threat_level ||
+  notification.threat_level ||
+  (finalThreatScore >= 80
+    ? 'Critical'
+    : finalThreatScore >= 60
+    ? 'High'
+    : finalThreatScore >= 30
+    ? 'Medium'
+    : 'Low');
+
+  const isCriticalThreat =
+  threatLevel.toLowerCase() === 'critical' ||
+  finalThreatScore >= 80;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+      {/* AI Prediction Status & Notification Bar */}
+<div className="space-y-4">
+
+  {/* Notification Bar */}
+  {predictionData?.notification && (
+    <div
+      className={`rounded-xl border p-4 ${
+        isCriticalThreat
+          ? 'bg-red-950/30 border-red-500/40'
+          : finalThreatScore >= 60
+          ? 'bg-amber-950/30 border-amber-500/40'
+          : 'bg-blue-950/30 border-blue-500/40'
+      }`}
+    >
+      <div className="flex items-start gap-3">
+        <div className="flex-shrink-0 mt-0.5">
+          <Bell
+            className={`w-5 h-5 ${
+              isCriticalThreat
+                ? 'text-red-400'
+                : finalThreatScore >= 60
+                ? 'text-amber-400'
+                : 'text-blue-400'
+            }`}
+          />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-sm font-bold text-white">
+              Threat Notification
+            </h2>
+
+            {notification.threat_level && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border border-gray-700 bg-gray-900 text-gray-300">
+                {notification.threat_level}
+              </span>
+            )}
+          </div>
+
+          <p className="text-sm text-gray-300 mt-1 break-words">
+            {notification.message ||
+              notification.description ||
+              notification.recommended_action ||
+              'AI threat analysis has completed for this file.'}
+          </p>
+
+          {notification.threat_category && (
+            <p className="text-xs text-gray-500 mt-1">
+              Category: {notification.threat_category}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  )}
+
+  {/* High Risk Warning */}
+  {isCriticalThreat && (
+    <div className="rounded-xl border border-red-500/50 bg-red-950/30 p-4 cyber-glow-red">
+      <div className="flex items-start gap-3">
+        <AlertTriangle className="w-6 h-6 text-red-400 flex-shrink-0" />
+
+        <div className="min-w-0">
+          <h2 className="text-sm font-bold text-red-300 uppercase tracking-wide">
+            High-Risk Threat Detected
+          </h2>
+
+          <p className="text-sm text-red-200/80 mt-1">
+            The AI prediction engine has identified this file as a
+            high-risk threat. Review the recommended security action
+            before proceeding.
+          </p>
+
+          <div className="mt-2 text-xs font-mono text-red-300">
+            Threat Score: {finalThreatScore}/100
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {/* Detection / Prediction Status */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+    {/* Detection Status */}
+    <div className="bg-[#111827] border border-gray-800 rounded-xl p-4">
+      <div className="flex items-center gap-3">
+        {statusUpdate.status?.toLowerCase() === 'completed' ? (
+          <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+        ) : (
+          <Activity className="w-5 h-5 text-blue-400 flex-shrink-0" />
+        )}
+
+        <div className="min-w-0">
+          <span className="text-xs text-gray-500 uppercase tracking-wider block">
+            Detection Status
+          </span>
+
+          <span className="text-sm font-semibold text-white">
+            {statusUpdate.status || 'Completed'}
+          </span>
+        </div>
+      </div>
+
+      {statusUpdate.message && (
+        <p className="text-xs text-gray-500 mt-2 break-words">
+          {statusUpdate.message}
+        </p>
+      )}
+    </div>
+
+    {/* Prediction Status */}
+    <div className="bg-[#111827] border border-gray-800 rounded-xl p-4">
+      <div className="flex items-center gap-3">
+
+        {predictionLoading ? (
+          <RefreshCw className="w-5 h-5 text-blue-400 animate-spin flex-shrink-0" />
+        ) : predictionData ? (
+          <Brain className="w-5 h-5 text-purple-400 flex-shrink-0" />
+        ) : (
+          <XCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+        )}
+
+        <div className="min-w-0">
+          <span className="text-xs text-gray-500 uppercase tracking-wider block">
+            Prediction Status
+          </span>
+
+          <span className="text-sm font-semibold text-white">
+            {predictionLoading
+              ? 'Analyzing...'
+              : predictionData
+              ? 'AI Prediction Completed'
+              : 'Prediction Unavailable'}
+          </span>
+        </div>
+      </div>
+
+      {predictionError && (
+        <p className="text-xs text-red-400 mt-2 break-words">
+          {predictionError}
+        </p>
+      )}
+    </div>
+
+  </div>
+</div>
       {/* Top Threat Alert Card */}
       <div className={`rounded-2xl border p-6 ${
         isHigh
@@ -75,6 +293,78 @@ export default function AnalysisResultPage({ fileId }) {
               <strong>Recommended Action:</strong>&nbsp;{analysis.recommended_action || 'Escalate for Security Analyst Review'}
             </p>
           </div>
+          {/* AI Threat Prediction Result */}
+{predictionData && (
+  <div className="bg-[#111827] border border-gray-800 rounded-2xl p-6 shadow-xl">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+      <div>
+        <div className="flex items-center gap-2">
+          <Brain className="w-5 h-5 text-purple-400" />
+          <h2 className="text-lg font-bold text-white">
+            AI Threat Prediction
+          </h2>
+        </div>
+
+        <p className="text-xs text-gray-500 mt-1">
+          Combined machine-learning and behavioral analysis result
+        </p>
+      </div>
+
+      <span
+        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase border ${
+          isCriticalThreat
+            ? 'bg-red-500/20 text-red-400 border-red-500/40'
+            : finalThreatScore >= 60
+            ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+            : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+        }`}
+      >
+        {threatLevel}
+      </span>
+    </div>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+      <div className="bg-gray-900/60 rounded-xl border border-gray-800 p-4">
+        <span className="text-xs text-gray-500 uppercase tracking-wider">
+          Threat Score
+        </span>
+
+        <div className="text-3xl font-black font-mono text-white mt-2">
+          {finalThreatScore}
+          <span className="text-sm text-gray-500">/100</span>
+        </div>
+      </div>
+
+      <div className="bg-gray-900/60 rounded-xl border border-gray-800 p-4">
+        <span className="text-xs text-gray-500 uppercase tracking-wider">
+          Threat Category
+        </span>
+
+        <p className="text-sm font-semibold text-white mt-2 break-words">
+          {threatReport.threat_category ||
+            notification.threat_category ||
+            analysis.threat_classification ||
+            'Unknown'}
+        </p>
+      </div>
+
+      <div className="bg-gray-900/60 rounded-xl border border-gray-800 p-4">
+        <span className="text-xs text-gray-500 uppercase tracking-wider">
+          Recommended Action
+        </span>
+
+        <p className="text-sm text-gray-300 mt-2 break-words">
+          {threatReport.recommended_action ||
+            notification.recommended_action ||
+            analysis.recommended_action ||
+            'Review manually'}
+        </p>
+      </div>
+
+    </div>
+  </div>
+)}
 
           {/* Risk Gauge Score Box */}
           <div className="bg-[#111827] border border-gray-800 rounded-xl p-5 text-center min-w-[200px]">

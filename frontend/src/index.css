@@ -3,8 +3,25 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    overflow-x: hidden;
+  }
+
   body {
     @apply bg-[#0B0F19] text-gray-100 selection:bg-blue-500 selection:text-white;
+    overflow-x: hidden;
+  }
+
+  img,
+  svg {
+    max-width: 100%;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
   }
 }
 
