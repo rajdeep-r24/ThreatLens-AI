@@ -7,6 +7,8 @@ from app.models.scan import File, AnalysisResult
 from app.services.behavioral_analysis.behavioral_analysis import analyze_behavior
 from app.services.behavioral_analysis.threat_prediction import predict_threat
 from app.services.behavioral_analysis.threat_report import generate_threat_report
+from app.services.notifications.notification_service import create_notification
+from app.services.notifications.status_service import create_status_update
 
 router = APIRouter(tags=["AI Prediction & Threat Reports"])
 
@@ -75,12 +77,33 @@ async def get_threat_prediction_report(
         ml_confidence=ml_confidence,
         behavioral_result=behavioral_result
     )
-    
+
     # 5. Step 3: Generate the Final Threat Report
     report = generate_threat_report(
         filename=file_record.filename,
         sha256_hash=file_record.sha256_hash or "Unknown",
         threat_prediction=threat_prediction
     )
+
+    # 6. Step 4: Generate Security Notification & Status
+    notification = create_notification(
+        filename=file_record.filename,
+        threat_level=threat_prediction.get("threat_level", "Unknown"),
+        threat_category=threat_prediction.get("threat_category", "Unknown"),
+        threat_score=threat_prediction.get("final_threat_score", 0),
+        recommended_action=threat_prediction.get("recommended_action", "Review manually")
+    )
+
+    status_update = create_status_update(
+        filename=file_record.filename,
+        status="Completed",
+        message="Threat analysis and AI prediction completed successfully."
+    )
     
-    return report
+    # Return both envelope and flat fields for maximum compatibility
+    result = dict(report)
+    result["threat_report"] = report
+    result["notification"] = notification
+    result["status_update"] = status_update
+    
+    return result
