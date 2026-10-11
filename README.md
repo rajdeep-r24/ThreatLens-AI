@@ -116,17 +116,6 @@ cd backend
 pytest -v
 ```
 
----
-
-## 👥 Project Team & Contributions
-
-* **Member 1:** Application Testing, QA & Workflow Validation
-* **Member 2:** UI Responsiveness, Theming & Optimization
-* **Member 3:** Docker Containerization & Cloud Deployment
-* **Member 4:** Technical Documentation, User Guide & Architecture Notes
-* **Member 5:** Final Integration, Evaluation Scenarios & Presentations
-
----
 
 ## 📜 Disclaimer
 ThreatLens-AI is intended for educational, research, and authorized cybersecurity threat analysis. Always analyze potentially malicious binaries in an isolated, secure environment.
