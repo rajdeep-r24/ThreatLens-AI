@@ -85,25 +85,25 @@ async def get_threat_prediction_report(
         threat_prediction=threat_prediction
     )
 
-    # 6. Step 4: Generate Security Notification & Status
+    # 6. Create security notification
     notification = create_notification(
         filename=file_record.filename,
         threat_level=threat_prediction.get("threat_level", "Unknown"),
         threat_category=threat_prediction.get("threat_category", "Unknown"),
         threat_score=threat_prediction.get("final_threat_score", 0),
-        recommended_action=threat_prediction.get("recommended_action", "Review manually")
+        recommended_action=threat_prediction.get("recommended_action", "Review manually"),
     )
 
+    # 7. Create detection status update
     status_update = create_status_update(
         filename=file_record.filename,
         status="Completed",
-        message="Threat analysis and AI prediction completed successfully."
+        message="Threat analysis and prediction completed successfully.",
     )
-    
-    # Return both envelope and flat fields for maximum compatibility
+
     result = dict(report)
     result["threat_report"] = report
     result["notification"] = notification
     result["status_update"] = status_update
-    
+
     return result

@@ -1,5 +1,6 @@
 """
-ThreatLens AI - Analysis Detection Status Updates
+ThreatLens AI - Milestone 3
+Member 4: Detection Status Updates
 """
 
 from datetime import datetime, timezone
@@ -11,7 +12,8 @@ def create_status_update(
     status: str,
     message: str,
 ) -> Dict[str, Any]:
-    """Create a scan lifecycle status update payload."""
+    """Create a detection status update."""
+
     return {
         "filename": filename,
         "status": status,

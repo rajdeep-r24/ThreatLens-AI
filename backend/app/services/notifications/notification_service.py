@@ -1,6 +1,8 @@
 """
-ThreatLens AI - Security Notifications Service
-Generates contextual alert notifications based on threat analysis and risk scores.
+ThreatLens AI - Milestone 3
+Member 4: Notifications & Reporting Workflow
+
+Creates security notifications from threat prediction results.
 """
 
 from datetime import datetime, timezone
@@ -15,35 +17,39 @@ def create_notification(
     recommended_action: str,
 ) -> Dict[str, Any]:
     """
-    Generate a structured security alert notification based on threat findings.
+    Create a security notification based on threat assessment.
     """
+
     if threat_level == "Critical":
         severity = "Critical"
         notification_type = "Security Warning"
         message = (
-            f"Critical severity threat detected in {filename}. "
-            "Immediate host isolation and analyst triage recommended."
+            f"Critical threat detected in {filename}. "
+            "Immediate investigation is recommended."
         )
+
     elif threat_level == "High":
         severity = "High"
         notification_type = "Threat Alert"
         message = (
-            f"High-risk threat indicators detected in {filename}. "
-            "Further forensic review and process monitoring recommended."
+            f"High-risk threat detected in {filename}. "
+            "Further investigation is recommended."
         )
+
     elif threat_level == "Medium":
         severity = "Medium"
         notification_type = "Security Warning"
         message = (
-            f"Suspicious heuristic activity detected in {filename}. "
-            "Behavioral verification recommended."
+            f"Suspicious activity detected in {filename}. "
+            "Security review is recommended."
         )
+
     else:
         severity = "Low"
         notification_type = "Detection Status"
         message = (
-            f"Clean / low-risk assessment for {filename}. "
-            "Standard monitoring baseline applied."
+            f"No significant threat detected in {filename}. "
+            "File can be monitored."
         )
 
     return {

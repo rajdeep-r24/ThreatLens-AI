@@ -3,8 +3,25 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    overflow-x: hidden;
+  }
+
   body {
     @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-300 selection:bg-blue-500 selection:text-white transition-colors duration-200;
+    overflow-x: hidden;
+  }
+
+  img,
+  svg {
+    max-width: 100%;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
   }
 }
 
@@ -15,8 +32,4 @@
 
 .cyber-glow-red {
   box-shadow: 0 0 20px rgba(239, 68, 68, 0.25);
-}
-
-.cyber-border {
-  border: 1px solid rgba(31, 41, 55, 0.8);
 }
